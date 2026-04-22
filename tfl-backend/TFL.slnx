@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TFL.API/TFL.API.csproj" />
+    <Project Path="src/TFL.Application/TFL.Application.csproj" />
+    <Project Path="src/TFL.Domain/TFL.Domain.csproj" />
+    <Project Path="src/TFL.Infrastructure/TFL.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TFL.Tests.Unit/TFL.Tests.Unit.csproj" />
+  </Folder>
+</Solution>

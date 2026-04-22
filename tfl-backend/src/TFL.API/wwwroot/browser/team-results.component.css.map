@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;d30ab8e1f97bf40468b93ba4f46729519f2d5695621eb31af4c41ef20d4c05be;/workspace/proj-tfl/tfl-frontend/src/app/features/draft/team-results/team-results.component.ts"],
+  "sourcesContent": [".team-results { padding: 1rem; } .combo { border: 1px solid #ccc; margin: 0.5rem; padding: 1rem; border-radius: 4px; } .teams { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }"],
+  "mappings": ";AAAA,CAAC;AAAe,WAAS;AAAM;AAAE,CAAC;AAAQ,UAAQ,IAAI,MAAM;AAAM,UAAQ;AAAQ,WAAS;AAAM,iBAAe;AAAK;AAAE,CAAC;AAAQ,WAAS;AAAM,yBAAuB,IAAI;AAAK,OAAK;AAAM;",
+  "names": []
+}

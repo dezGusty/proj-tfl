@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;81ab108de7b5f24068b56e74777a42b2a206cb6db4db894cec88c5069f573432;/workspace/proj-tfl/tfl-frontend/src/app/features/matches/match-history/match-history.component.ts"],
+  "sourcesContent": [".match-history { padding: 1rem; } .match-card { border: 1px solid #ccc; padding: 0.5rem; margin: 0.25rem; border-radius: 4px; display: flex; gap: 1rem; cursor: pointer; } .status { margin-left: auto; }"],
+  "mappings": ";AAAA,CAAC;AAAgB,WAAS;AAAM;AAAE,CAAC;AAAa,UAAQ,IAAI,MAAM;AAAM,WAAS;AAAQ,UAAQ;AAAS,iBAAe;AAAK,WAAS;AAAM,OAAK;AAAM,UAAQ;AAAS;AAAE,CAAC;AAAS,eAAa;AAAM;",
+  "names": []
+}

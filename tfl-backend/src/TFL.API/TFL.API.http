@@ -1,0 +1,6 @@
+@TFL.API_HostAddress = http://localhost:5145
+
+GET {{TFL.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

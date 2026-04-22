@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;c10ad40b2258121ad53342dfe15b4ab5e103e1ab7eba0bc03f885bc75d3f7b5f;/workspace/proj-tfl/tfl-frontend/src/app/features/game-events/game-events-summary/game-events-summary.component.ts"],
+  "sourcesContent": [".summary-page { padding: 1rem; }"],
+  "mappings": ";AAAA,CAAC;AAAe,WAAS;AAAM;",
+  "names": []
+}
