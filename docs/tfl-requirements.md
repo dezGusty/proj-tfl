@@ -93,6 +93,7 @@ Represents an individual in the football roster (not necessarily an app user).
 | reserve | boolean | Whether the player is on the bench by default. |
 | isArchived | boolean | Soft-delete flag. Archived players are hidden from default views. |
 | mostRecentMatches | RecentEntry[] | Rolling window of recent match results (configurable length, default 8). |
+| lastModified | datetime | System-managed timestamp updated on every write. Used for sync change detection. |
 
 #### 3.1.1 RecentEntry
 
@@ -137,6 +138,7 @@ A working set of players selected for the next match.
 | Field | Type | Description |
 |-------|------|-------------|
 | players | Player[] | Ordered list of selected players. |
+| lastModified | datetime | System-managed timestamp updated on every write. Used for sync change detection. |
 
 ### 3.5 GameEvent
 
@@ -150,6 +152,7 @@ A scheduled future match to which players can register.
 | playerReserveStatus | boolean[] | Parallel array — reserve flag per registered player. |
 | inactive | boolean | Whether the event has been deactivated. |
 | matchStatus | MatchStatus | Current status of the resulting match. |
+| lastModified | datetime | System-managed timestamp updated on every write. Used for sync change detection. |
 
 #### 3.5.1 MatchStatus (enum)
 
@@ -175,6 +178,7 @@ A completed (or upcoming) game with team compositions and result.
 | appliedResults | boolean | Whether rating adjustments have been applied. |
 | postResults | {id, diff}[] | Per-player rating change records. |
 | status | MatchStatus | Match validity status. |
+| lastModified | datetime | System-managed timestamp updated on every write. Used for sync change detection. |
 
 ### 3.7 RatingSnapshot (archive)
 
@@ -186,7 +190,20 @@ A completed (or upcoming) game with team compositions and result.
 
 ### 3.8 GameEventIndex / MatchIndex
 
-Lightweight index documents listing active game event names and recent match keys respectively, with optional status metadata.
+These documents exist in Firestore only as index/navigation helpers for the legacy Angular app. They are **not** imported as separate SQLite tables; instead, the sync service rebuilds them in Firestore as derived data after each sync (see §6).
+
+### 3.9 SyncConflict
+
+A record flagged during sync because the same entity was modified on both sides since the last successful sync.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | integer | Unique identifier. |
+| entityType | enum | `Player`, `Match`, `GameEvent`, `Draft`. |
+| entityKey | string | The primary key of the conflicted record (player ID, match dateKey, etc.). |
+| sqliteSnapshot | json | The SQLite version of the record at conflict detection time. |
+| firestoreSnapshot | json | The Firestore version of the record at conflict detection time. |
+| detectedAt | datetime | When the conflict was detected. |
 
 ---
 
@@ -300,6 +317,26 @@ Lightweight index documents listing active game event names and recent match key
 | PSH-4 | A push notification shall be sent when: a new game event is available to join, a player joins or leaves an event, or an organizer makes a significant change. |
 | PSH-5 | Users shall be able to unsubscribe from push notifications. |
 
+### 4.10 Firebase Synchronisation (New)
+
+| ID | Requirement |
+|----|-------------|
+| SYN-1 | The system shall support bidirectional sync between Firestore and SQLite for the following entity types: Player, Match, GameEvent, and Draft. |
+| SYN-2 | AppSettings, AppUsers, and the Firestore index documents (`matches/recent`, `games/_list`) are excluded from bidirectional sync (see §6). |
+| SYN-3 | An Admin shall be able to trigger a full sync covering all entity types. |
+| SYN-4 | An Admin shall be able to trigger a partial sync for a single entity type. |
+| SYN-5 | A sync operation shall read all relevant Firestore documents, compare them with the corresponding SQLite records, and propagate changes in both directions. |
+| SYN-6 | For each synced entity the system shall compare the SQLite `lastModified` timestamp with the Firestore document `updateTime` to detect which side changed since the last sync. |
+| SYN-7 | If a record was modified only on one side since the last sync, the system shall propagate that change to the other side. |
+| SYN-8 | If a record was modified on both sides since the last sync, the system shall flag it as a `SyncConflict` and skip syncing that record. |
+| SYN-9 | A conflicted record shall not be synced until an Admin resolves it. |
+| SYN-10 | An Admin shall be able to resolve a conflict by selecting either the SQLite or the Firestore version as the canonical value; the chosen version shall then be written to both systems. |
+| SYN-11 | After a sync, the system shall rebuild the Firestore index documents (`matches/recent` and `games/_list`) as derived data from the synced Match and GameEvent records, so that the legacy Angular app continues to function. |
+| SYN-12 | A physical deletion in Firestore (document removed) shall be treated as a soft-delete in SQLite: the corresponding Player's `isArchived` flag shall be set to `true`; Match and GameEvent records shall have their status set to `not_played` / `inactive` respectively. |
+| SYN-13 | The first sync against an empty SQLite database shall behave as a full bootstrap import from Firestore (equivalent to the former one-time migration). |
+| SYN-14 | A sync operation shall be idempotent — running it multiple times with no intervening changes on either side shall produce no changes. |
+| SYN-15 | The Admin sync page shall display: the timestamp of the last completed sync, the count of unresolved conflicts, and the result summary of the most recent sync run. |
+
 ---
 
 ## 5. Non-Functional Requirements
@@ -347,26 +384,27 @@ Lightweight index documents listing active game event names and recent match key
 
 ---
 
-## 6. Data Migration
+## 6. Firebase Synchronisation
+
+The new TFL application runs alongside the legacy Firebase Angular app during the transition period. A bidirectional sync service keeps Firestore and the SQLite database in agreement, allowing both applications to remain operational concurrently.
 
 | ID | Requirement |
 |----|-------------|
-| MIG-1 | A one-time import tool shall read all documents from the six Firestore collections and populate the SQLite database. |
-| MIG-2 | Firestore document IDs shall be mapped to local primary keys preserving referential integrity. |
-| MIG-3 | The import shall be idempotent — running it again shall not create duplicates. |
-| MIG-4 | After import, the legacy Firebase app is considered read-only archive. No bidirectional sync is required. |
+| SYN-1–SYN-15 | See §4.10 for the full list of sync functional requirements. |
 
 ### 6.1 Firestore Collection Mapping
 
-| Firestore Path | Target Entity |
-|----------------|--------------|
-| `ratings/current` | Player (active roster) |
-| `ratings/archive` | Player (isArchived = true) |
-| `drafts/next` | Draft |
-| `matches/recent` + `matches/{dateKey}` | MatchIndex + Match |
-| `games/_list` + `games/{name}` | GameEventIndex + GameEvent |
-| `settings/app` | AppSettings |
-| `users/{uid}` | AppUser |
+| Firestore Path | SQLite Entity | Sync Direction | Notes |
+|----------------|--------------|----------------|-------|
+| `ratings/current` | Player (`isArchived = false`) | Bidirectional | |
+| `ratings/archive` | Player (`isArchived = true`) | Bidirectional | |
+| `drafts/next` | Draft | Bidirectional | |
+| `matches/{dateKey}` | Match | Bidirectional | |
+| `games/{name}` | GameEvent | Bidirectional | |
+| `matches/recent` | _(derived)_ | Firestore write-only | Rebuilt from Match records after each sync; not stored as a SQLite entity. |
+| `games/_list` | _(derived)_ | Firestore write-only | Rebuilt from GameEvent records after each sync; not stored as a SQLite entity. |
+| `settings/app` | AppSettings | Not synced | Settings are managed exclusively in the new app. |
+| `users/{uid}` | AppUser | Not synced | User/auth management is handled exclusively by the new app. |
 
 ---
 
@@ -406,6 +444,11 @@ The following outlines the expected REST API resource structure. Detailed reques
 | GET | `/api/auth/callback` | Public | OAuth callback, issues JWT. |
 | POST | `/api/notifications/subscribe` | Standard | Register a push subscription. |
 | DELETE | `/api/notifications/subscribe` | Standard | Unregister a push subscription. |
+| GET | `/api/sync/status` | Admin | Get last sync timestamp, unresolved conflict count, and last run summary. |
+| POST | `/api/sync` | Admin | Trigger a full sync (all entity types). |
+| POST | `/api/sync/{entityType}` | Admin | Trigger a partial sync for one entity type (`players`, `matches`, `game-events`, `draft`). |
+| GET | `/api/sync/conflicts` | Admin | List all unresolved `SyncConflict` records. |
+| PUT | `/api/sync/conflicts/{id}/resolve` | Admin | Resolve a conflict by choosing `sqlite` or `firestore` as the canonical version. |
 
 ---
 
@@ -431,6 +474,7 @@ The Angular front-end shall provide the following views, mirroring the legacy ap
 | `/recent/:id` | MatchDetailPage | Standard | Match result detail with rating diffs. |
 | `/admin` | AdminPage | Admin | Application settings. |
 | `/admin/users` | UserManagementPage | Admin | User approval and role management (new). |
+| `/admin/sync` | SyncPage | Admin | Firebase sync status, trigger controls, and conflict resolution UI (new). |
 
 ---
 
@@ -438,11 +482,11 @@ The Angular front-end shall provide the following views, mirroring the legacy ap
 
 The following items are explicitly **not** part of this specification:
 
-- Bidirectional Firebase ↔ SQLite sync (a clean one-time import is used instead).
 - Facebook login (only Google OAuth is supported).
 - Mobile native app (the web app should be responsive but is not a PWA with offline support).
 - Tournament brackets, league standings, or multi-season tracking.
 - Real-time collaborative editing (changes are per-request; no WebSocket-based live sync of views is required in v1).
+- Automatic / real-time Firebase sync (sync is admin-triggered on demand; no continuous background replication).
 
 ---
 
@@ -463,6 +507,6 @@ All requirement IDs follow this convention for traceability:
 | PSR | Player self-registration & self-join |
 | EML | Email notifications |
 | PSH | Push notifications |
+| SYN | Firebase synchronisation |
 | NFR | Non-functional requirements |
-| MIG | Data migration |
 
