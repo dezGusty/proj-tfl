@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;10ac2fae6ed35d4177c307c8cd5dcc908221181bfe03e72b0ec7ad551da94370;/workspace/proj-tfl/tfl-frontend/src/app/features/about/about.component.ts"],
+  "sourcesContent": [".about-page { padding: 2rem; max-width: 600px; margin: 0 auto; }"],
+  "mappings": ";AAAA,CAAC;AAAa,WAAS;AAAM,aAAW;AAAO,UAAQ,EAAE;AAAM;",
+  "names": []
+}

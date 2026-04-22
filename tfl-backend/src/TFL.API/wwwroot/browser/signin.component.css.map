@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;3cab968f8a52fbe1b624f2a4586cf1a0847acea92850b8aef9a75fdbbe858fa6;/workspace/proj-tfl/tfl-frontend/src/app/features/signin/signin.component.ts"],
+  "sourcesContent": [".signin-page { padding: 2rem; text-align: center; } .error { color: red; } .btn-google { display: inline-block; padding: 0.75rem 1.5rem; background: #4285f4; color: white; text-decoration: none; border-radius: 4px; }"],
+  "mappings": ";AAAA,CAAC;AAAc,WAAS;AAAM,cAAY;AAAQ;AAAE,CAAC;AAAQ,SAAO;AAAK;AAAE,CAAC;AAAa,WAAS;AAAc,WAAS,QAAQ;AAAQ,cAAY;AAAS,SAAO;AAAO,mBAAiB;AAAM,iBAAe;AAAK;",
+  "names": []
+}

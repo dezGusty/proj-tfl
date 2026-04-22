@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;abac56467488fc9498f200ce69a0a41b4e80eeca16b9ee202e7e07d614600e7e;/workspace/proj-tfl/tfl-frontend/src/app/features/admin/sync/sync-page.component.ts"],
+  "sourcesContent": [".sync-page { padding: 1rem; } .controls { margin: 1rem 0; } button { margin: 0.25rem; padding: 0.5rem 1rem; } .conflict { border: 1px solid orange; padding: 0.5rem; margin: 0.25rem; border-radius: 4px; }"],
+  "mappings": ";AAAA,CAAC;AAAY,WAAS;AAAM;AAAE,CAAC;AAAW,UAAQ,KAAK;AAAG;AAAE;AAAS,UAAQ;AAAS,WAAS,OAAO;AAAM;AAAE,CAAC;AAAW,UAAQ,IAAI,MAAM;AAAQ,WAAS;AAAQ,UAAQ;AAAS,iBAAe;AAAK;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/draft/draft.routes.ts"],
+  "sourcesContent": ["import { Routes } from '@angular/router';\n\nexport const DRAFT_ROUTES: Routes = [\n  { path: '', loadComponent: () => import('./draft-page/draft-page.component').then(m => m.DraftPageComponent) },\n  { path: 'results', loadComponent: () => import('./team-results/team-results.component').then(m => m.TeamResultsComponent) },\n];\n"],
+  "mappings": ";;;AAEO,IAAM,eAAuB;EAClC,EAAE,MAAM,IAAI,eAAe,MAAM,OAAO,qBAAmC,EAAE,KAAK,OAAK,EAAE,kBAAkB,EAAC;EAC5G,EAAE,MAAM,WAAW,eAAe,MAAM,OAAO,qBAAuC,EAAE,KAAK,OAAK,EAAE,oBAAoB,EAAC;;",
+  "names": []
+}

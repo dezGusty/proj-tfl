@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;b339be2c51a77d1311cfa3013461e83886e69e68d1e0727c3f3ec382d0c80ef9;/workspace/proj-tfl/tfl-frontend/src/app/features/privacy/privacy.component.ts"],
+  "sourcesContent": [".privacy-page { padding: 2rem; max-width: 600px; margin: 0 auto; }"],
+  "mappings": ";AAAA,CAAC;AAAe,WAAS;AAAM,aAAW;AAAO,UAAQ,EAAE;AAAM;",
+  "names": []
+}

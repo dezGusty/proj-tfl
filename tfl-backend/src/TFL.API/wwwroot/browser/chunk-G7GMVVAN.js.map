@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/about/about.component.ts"],
+  "sourcesContent": ["import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-about',\n  standalone: true,\n  template: `\n    <div class=\"about-page\">\n      <h1>Thursday Football League</h1>\n      <p>TFL is a weekly football league organiser. Track player ratings, manage game day registrations, and balance teams fairly.</p>\n      <p>Use the navigation to access players, matches, game events, and the draft tool.</p>\n    </div>\n  `,\n  styles: [`.about-page { padding: 2rem; max-width: 600px; margin: 0 auto; }`]\n})\nexport class AboutComponent {}\n"],
+  "mappings": ";;;;;;;;;;;;AAcM,IAAO,iBAAP,MAAO,gBAAc;;qCAAd,iBAAc;EAAA;yEAAd,iBAAc,WAAA,CAAA,CAAA,WAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,GAAA,YAAA,CAAA,GAAA,UAAA,SAAA,wBAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AARvB,MAAA,4BAAA,GAAA,OAAA,CAAA,EAAwB,GAAA,IAAA;AAClB,MAAA,iBAAA,GAAA,0BAAA;AAAwB,MAAA,0BAAA;AAC5B,MAAA,4BAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,2HAAA;AAAyH,MAAA,0BAAA;AAC5H,MAAA,4BAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,iFAAA;AAA+E,MAAA,0BAAA,EAAI;;;;;sEAK/E,gBAAc,CAAA;UAZ1B;uBACW,aAAW,YACT,MAAI,UACN;;;;;;KAMT,QAAA,CAAA,+SAAA,EAAA,CAAA;;;;6EAGU,gBAAc,EAAA,WAAA,kBAAA,UAAA,6CAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": []
+}

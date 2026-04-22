@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;36c741efef5e5f9392608daee7e422d93fb806d1ba23364939479c83eeb122a0;/workspace/proj-tfl/tfl-frontend/src/app/features/players/player-edit/player-edit.component.ts"],
+  "sourcesContent": [".player-edit { padding: 1rem; } label { display: block; margin: 0.5rem 0; } input, select { width: 100%; padding: 0.25rem; } button { margin-top: 1rem; padding: 0.5rem 1rem; }"],
+  "mappings": ";AAAA,CAAC;AAAc,WAAS;AAAM;AAAE;AAAQ,WAAS;AAAO,UAAQ,OAAO;AAAG;AAAE;AAAO;AAAS,SAAO;AAAM,WAAS;AAAS;AAAE;AAAS,cAAY;AAAM,WAAS,OAAO;AAAM;",
+  "names": []
+}

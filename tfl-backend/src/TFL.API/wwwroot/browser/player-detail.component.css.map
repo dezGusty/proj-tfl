@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;d9f05499bc83d63368299911ef5f17e1d66326b84c676c1a39292589194a11bf;/workspace/proj-tfl/tfl-frontend/src/app/features/players/player-detail/player-detail.component.ts"],
+  "sourcesContent": [".player-detail { padding: 1rem; }"],
+  "mappings": ";AAAA,CAAC;AAAgB,WAAS;AAAM;",
+  "names": []
+}
