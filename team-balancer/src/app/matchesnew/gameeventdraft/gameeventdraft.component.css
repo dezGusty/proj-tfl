@@ -1,0 +1,98 @@
+.toolbar-container {
+  padding: 0.25em 0.5em;
+}
+
+.panel-draft-icons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.searchfield {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  outline: none;
+}
+
+.availableplayers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10em, 1fr));
+}
+
+.leftArea {
+  flex-grow: 0;
+  min-width: 10em;
+}
+
+.rightArea {
+  flex-grow: 1;
+  min-width: 10em;
+}
+
+.selectedplayers {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: repeat(auto-fill, minmax(10em, 1fr));
+}
+
+.player-with-reserve-marker {
+  display: flex;
+  flex-direction: row;
+  background-color: transparent;
+}
+
+.draftPlayersArea {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.fb-docname-label {
+  font-size: 0.8em;
+  font-weight: lighter;
+}
+
+
+.info-and-buttons-area {
+  display: flex;
+  flex-direction: row;
+  /*split the contained items to the edges*/
+  justify-content: space-between;
+}
+
+.left-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+.right-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  /* contained items shall be arranged vertically. align then to the right*/
+  justify-content: flex-end;
+}
+
+.f-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25em;
+}
+
+.highlighted {
+  border-color: red;
+}
+
+.with-enter-glyph {
+  border-color: orangered;
+}
+.with-enter-glyph::after {
+  content: "👈";
+  position: relative;
+  right: 0.5em;
+}

@@ -1,0 +1,17 @@
+<ul class="list-group">
+  @for (gameOption of this.displayedMatchCombos; track $index) {
+  <li class="player-card">
+    <div style="cursor: pointer" (click)="onGameOptionSelected(gameOption, $index);">
+      <span class="game-option-index"># {{$index+1}}</span>
+      <span class="game-option-index">combo-code: {{gameOption.combination}}</span>
+      <p class="game-option-index">diff: {{gameOption.diff}}</p>
+      <app-match-versus [contentsIndex]="$index" [displayedMatchDetails]="this.displayedMatchDetails"
+        [playerList]="this.playerList">
+      </app-match-versus>
+    </div>
+    @if (this.showDetailedSelection && this.showDetailedSelectionIndex===$index) {
+    <app-match-storage [customGame]=this.selectionData></app-match-storage>
+    }
+  </li>
+  }
+</ul>

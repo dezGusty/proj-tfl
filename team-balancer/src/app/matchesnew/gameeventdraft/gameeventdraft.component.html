@@ -1,0 +1,89 @@
+@if (this.selectedMatchContent(); as selectedMatchContent) {
+
+<div class="info-and-buttons-area">
+  <div class="left-info">
+    <div>
+      <h3>{{selectedMatchContent.matchDate}}</h3>
+    </div>
+    <div class="fb-docname-label">
+      {{selectedMatchContent.name}}
+    </div>
+
+    <div>
+      <label for="autosave">Auto-save</label>
+      <input type="checkbox" id="autosave" [ngModel]="this.autoSaveGameEventSignal()"
+        (ngModelChange)="this.onToggleAutoSaveChange($event)">
+    </div>
+
+  </div>
+  <div class="right-buttons">
+    <div class="f-row">
+      <div class="gus-button gus-border gus-hoverable pseudo-button" (mousedown)="this.randomizeMouseDown()"
+        (mouseup)="this.randomizeMouseUp()" (touchstart)="this.randomizeMouseDown()"
+        (touchend)="this.randomizeMouseUp()"
+        [class.pseudo-disabled]="(this.hasEnoughPlayersForRandomize$ |async) == false">🎲</div>
+      <button type="button" class="gus-button gus-border gus-hoverable"
+        [disabled]="(this.canStillApplyRandomization$ | async)==false" [title]="'Apply stars ⭐'"
+        (click)="this.saveRaffle()">⭐</button>
+      <button type="button" class="gus-button gus-border gus-hoverable"
+        [title]="(this.selectedMatchContent().inactive ? 'Activate' : 'Deactivate') + ' this game event for clipboard copy'"
+        (click)="this.onToggleInactive()">
+        {{this.selectedMatchContent().inactive ? '✅ A' : '🚫 D'}}
+      </button>
+    </div>
+    <div class="f-row">
+      <button class="gus-button gus-border gus-hoverable" (click)="transferToDraft()">📤 xfer</button>
+      <button type="button" class="gus-button gus-border gus-hoverable"
+        [disabled]="(this.hasDataToSave$ | async)==false" (click)="this.save()">Save ☁️</button>
+    </div>
+  </div>
+</div>
+
+<div class="border-bottom gus-search-box">
+  <input class="form-control searchfield" type="text" [(ngModel)]="this.searchedNameSg"
+    (keyup)="onSearchContentChange($event)" placeholder="Search... ( CTRL + / )" aria-label="Search" #srcNameArea
+    autofocus />
+  @if (this.searchedNameSg() != undefined && this.searchedNameSg().length > 0) {
+  <button aria-label="Clear" class="gus-button gus-border gus-hoverable pseudo-button" type="button"
+    (click)="onSearchContentClear()">
+    ❌</button>
+  }
+</div>
+
+<div class="draftPlayersArea">
+  <div class="leftArea">
+
+    Selected players
+    <div class="selectedplayers">
+      @for (player of (this.selectedMatchContentWithHighlights$ | async); track $index ) {
+      <div class="player-with-reserve-marker">
+        <div class="gus-button gus-border gus-hoverable" (click)="this.onToggleReserve(player.data)">
+          {{!player.data.reserve ? '⬇️' : '🔼'}}
+        </div>
+        <div class="gus-button gus-border player-card-grad gus-hoverable" [class.highlighted]=player.selected
+          (click)="this.onClickToRemovePlayerById(player.data)">
+          {{$index+1}}. {{player.data.name}}
+          {{player.data.stars > 0? '⭐' : ''}}
+        </div>
+      </div>
+      }
+    </div>
+
+  </div>
+
+  <div class="rightArea">
+    Available players
+    <div class="availableplayers">
+      @for (player of this.filteredAvailablePlayers$ | async; track $index) {
+      <div class="gus-button gus-border player-card-grad gus-hoverable" [class.with-enter-glyph]=player.selected
+        (click)="this.onClickToAddPlayer(player.data)">
+        {{getDisplayInfo(player.data)}} {{player.data.stars > 0? '⭐' : ''}}
+      </div>
+      }
+    </div>
+  </div>
+</div>
+}
+
+@if (this.enterHandler$ | async) {}
+@if (this.randomizeOperation$ | async) {}

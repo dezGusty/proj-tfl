@@ -1,0 +1,38 @@
+<header class="header">
+  <div class="gus-page-container gus-centerpiece">
+    <div class="nav">
+      <input type="checkbox" id="nav-check" placeholder="-" [(ngModel)]="this.menuDisplayed">
+      <div class="nav-btn" (click)="this.logoAreaClick($event)">
+        <img class="nav-logo" src="./../../assets/gusball_logo_256.webp" alt="logo" />
+        <label class="nav-label">
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
+      </div>
+
+      <div class="nav-links" (click)="this.navLinkClick($event)">
+        @if(authenticatedAsUserSig()){
+        <a class="nav-link" routerLink="/games">Games (planned)</a>
+        <a class="nav-link" routerLink="/nextdraft">Next Draft</a>
+        @if(authenticatedAsOrganizerSig()){
+        <a class="nav-link" routerLink="/custom">Custom Game</a>
+        }
+        <a class="nav-link" routerLink="/recent">Recent Matches</a>
+        <a class="nav-link" routerLink="/players">Players</a>
+        }
+        @if(authenticatedAsAdminSig()){
+        <a class="nav-link" routerLink="/admin">Admin</a>
+        }
+        <a class="nav-link" routerLink="/about">About</a>
+        @if(this.authenticatedSig()) {
+        <a class="nav-link" (click)="onSignoutBtnClick();">Sign out</a>
+        }@else{
+        <a class="nav-link" routerLink="/signin">Sign in</a>
+        }
+      </div>
+      <div class="nav-spacer"></div>
+      <app-profile />
+    </div>
+  </div>
+</header>

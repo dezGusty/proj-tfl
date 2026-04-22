@@ -1,0 +1,157 @@
+a {
+  font-weight: 500;
+  text-decoration: none;
+  display: block;
+}
+
+.header {
+  position: sticky;
+  background: var(--gus-panel-bck);
+}
+
+app-profile {
+  margin-right: 0.5em;
+  grid-area: nav-profile;
+}
+
+.nav-logo {
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.nav {
+  /* width: 100%; */
+
+  /* margin-left: auto;
+  margin-right: auto; */
+
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: fit-content(4rem) fit-content(100%) fit-content(4rem);
+  grid-template-areas:
+    "nav-menu nav-links nav-profile";
+}
+
+.nav-header {
+  display: inline;
+}
+
+.nav-btn {
+  cursor: pointer;
+  grid-area: nav-menu;
+}
+
+.nav-spacer {
+  /* flex-grow: 10; */
+  grid-area: spacer;
+}
+
+
+.nav>.nav-btn {
+  display: flex;
+  padding: 3px;
+  height: 2.5em;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.nav>.nav-links {
+  display: flex;
+  cursor: pointer;
+  grid-area: nav-links;
+}
+
+.nav>.nav-links>a {
+  padding: 0.6em 0.35em;
+  color: #efefef;
+  display: flex;
+  align-items: center;
+}
+
+.nav>.nav-links>a:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+.nav>#nav-check {
+  display: none;
+}
+
+@media (max-width:900px) {
+  .nav {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "nav-menu spacer nav-profile"
+      "nav-links nav-links nav-links";
+    width: 100%;
+  }
+
+  .nav>.nav-btn {
+    /* position: absolute; */
+    left: 0px;
+    top: 0px;
+    padding: 3px;
+    /* z-index: 10; */
+  }
+
+  .nav>.nav-btn>.nav-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 4px;
+    gap: 0.25rem;
+    /* z-index: 10; */
+  }
+
+  .nav>.nav-btn:hover,
+  .nav #nav-check:checked~.nav-btn {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-label>span {
+    width: 1.5em;
+    height: 0.25em;
+    border-top: 4px solid #eee;
+  }
+
+  .nav-spacer {
+    width: 100%;
+    height: 100%;
+    grid-area: spacer;
+  }
+
+  .nav>.nav-links {
+    /* position: absolute; */
+    /* gusti, 2024-04-28: enable this for a quick fix to visibility, but breaking layout */
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    /* display: block; */
+    width: 100%;
+    background: var(--gus-panel-bck);
+    height: 0px;
+    width: 0px;
+    /* transition: transform 0.75s ease-in; */
+    overflow-y: hidden;
+    /* top: 48px; */
+    left: 0px;
+    /* z-index: 20; */
+  }
+
+  .nav>#nav-check:not(:checked)~.nav-links {
+    transition: height 0.75s ease-in;
+    height: 0px;
+  }
+
+  .nav>#nav-check:checked~.nav-links {
+    transition: height 0.75s ease-in;
+    height: auto;
+    width: 100%;
+    /* overflow-x: hidden; */
+    /* z-index: 20; */
+    /* overflow: hidden; */
+  }
+}

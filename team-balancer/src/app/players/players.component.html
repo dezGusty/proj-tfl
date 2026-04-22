@@ -1,0 +1,73 @@
+<div class="players-toolbar f-row f-align-center">
+  <div class="col col-auto">
+    @if (showLoadingSig()) {
+      <app-small-loading-spinner></app-small-loading-spinner>
+    }
+  </div>
+
+  <div class="col col-8 col-sm-9 col-md-8 col-lg-6 border-bottom gus-search-box">
+    <input class="form-control border-0" type="text" [(ngModel)]="searchedName"
+      placeholder="Search..." aria-label="Search" #srcNameArea autofocus>
+  </div>
+
+  <div class="toolbar-actions">
+    <button class="gus-button gus-border gus-hoverable toolbar-btn"
+      [class.gus-button-active]="loadArchive"
+      type="button"
+      title="Include archived players"
+      (click)="loadArchive = !loadArchive; onLoadArchiveChange(loadArchive)">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+        class="bi bi-file-earmark-zip-fill" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M5.5 9.438V8.5h1v.938a1 1 0 0 0 .03.243l.4 1.598-.93.62-.93-.62.4-1.598a1 1 0 0 0 .03-.243z" />
+        <path
+          d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-4-.5V2h-1V1H6v1h1v1H6v1h1v1H6v1h1v1H5.5V6h-1V5h1V4h-1V3h1zm0 4.5h1a1 1 0 0 1 1 1v.938l.4 1.599a1 1 0 0 1-.416 1.074l-.93.62a1 1 0 0 1-1.109 0l-.93-.62a1 1 0 0 1-.415-1.074l.4-1.599V8.5a1 1 0 0 1 1-1z" />
+      </svg>
+      <span class="toolbar-btn-label">Include archive</span>
+    </button>
+    @if (canAddPlayers()) {
+      <button class="gus-button gus-border gus-hoverable toolbar-btn" type="button"
+        (click)="onNewPlayerClicked($event)">➕ <span class="toolbar-btn-label">Add</span></button>
+    }
+  </div>
+</div>
+
+<div class="players-table-wrapper">
+  <table class="players-table">
+    <thead>
+      <tr>
+        <th class="col-id sortable" (click)="onSortBy('id')">ID{{sortIndicator('id')}}</th>
+        <th class="col-name sortable" (click)="onSortBy('name')">Name{{sortIndicator('name')}}</th>
+        <th class="col-displayname sortable" (click)="onSortBy('displayName')">Display{{sortIndicator('displayName')}}</th>
+        <th class="col-rating sortable" (click)="onSortBy('rating')">Rating{{sortIndicator('rating')}}</th>
+        <th class="col-recent sortable" (click)="onSortBy('recent')">Recent{{sortIndicator('recent')}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (player of sortedFilteredPlayers(); track player.id) {
+        <tr class="player-row" [class.archived]="player.isArchived" (click)="onPlayerSelected(player)">
+          <td class="col-id">{{player.id}}</td>
+          <td class="col-name">{{player.name}}</td>
+          <td class="col-displayname">{{getDisplayName(player)}}</td>
+          <td class="col-rating">{{player.rating | number:'1.0-2'}}</td>
+          <td class="col-recent">
+            @for (match of getRecentMatches(player); track $index) {
+              <span [ngClass]="getMatchClass(match)" [title]="match.date + ' (' + match.diff.toPrecision(2) + ')'">
+                {{getMatchIcon(match)}}
+              </span>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div id="player-details-sidenav" class="gus-sidenav"
+  [ngClass]="isSideNavOpenSig() ? 'gus-sidenav-shown' : 'gus-sidenav-hidden'"
+  (click)="onSideNavOuterContainerClicked()">
+  <app-player-details-new (onCloseBtnClicked)="onCloseSideNavBtnClick()"
+    (onMovePlayerToArchiveClicked)="onMovePlayerToArchive(selectedPlayerSig())"
+    (onMovePlayerToActiveClicked)="onMovePlayerToActive(selectedPlayerSig())"
+  [player]="selectedPlayerSig()"></app-player-details-new>
+
+</div>

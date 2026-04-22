@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "teams-balancer",
+    "team-balancer": "teams-balancer",
+    "teams-balancer": "teams-balancer"
+  },
+  "targets": {
+    "teams-balancer": {
+      "hosting": {
+        "team-balancer": [
+          "teams-balancer"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

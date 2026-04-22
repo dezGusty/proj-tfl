@@ -1,0 +1,698 @@
+import { Player, RecentEntryType } from './player.model';
+import { Injectable, Injector, OnDestroy, runInInjectionContext } from '@angular/core';
+import { BehaviorSubject, catchError, finalize, map, of, shareReplay, Subject, Subscription, switchMap, tap } from 'rxjs';
+import { CustomPrevGame } from './custom-prev-game.model';
+import { AppStorage } from './app-storage';
+
+import { RatingSystemSettings } from './rating-system';
+import { PlayerChangeInfo } from './player-change-info';
+import { RatingHist } from './rating-hist.model';
+import { UserAuthService } from '../auth/user-auth.service';
+import { collection, doc, docData, Firestore, getDoc, getDocs, setDoc } from '@angular/fire/firestore';
+import { PlayerRatingSnapshot } from './player-rating-snapshot.model';
+import { SettingsService } from './settings.service';
+import { LoadingFlagService } from '../utils/loading-flag.service';
+import { NotificationService } from '../utils/notification/notification.service';
+
+/**
+ * Stores and retrieves player related information.
+ */
+@Injectable()
+export class PlayersService implements OnDestroy {
+
+    private dataChangeSubscriptions: Subscription[] = [];
+    private currentLabel: string = '';
+
+    // constructor.
+    constructor(
+        private firestore: Firestore,
+        private authSvc: UserAuthService,
+        private appStorage: AppStorage,
+        private settingsSvc: SettingsService,
+        private loadingFlagService: LoadingFlagService,
+        private notificationService: NotificationService,
+        private injector: Injector) {
+
+        if (!this.authSvc.isAuthenticated()) {
+            console.log('[players] waiting for login...');
+        }
+
+        // Load the cached players from the session storage.
+        const cachedPlayers = appStorage.getAppStorageItem('players');
+        if (cachedPlayers) {
+            this.currentPlayerList = JSON.parse(cachedPlayers);
+        }
+
+        // Subscribe to the login-logout events.
+        this.authSvc.onSignInOut$.subscribe((message) => {
+            if (message === 'signout-pending') {
+                this.unsubscribeFromDataSources();
+            } else if (message === 'signin-done') {
+                this.subscribeToDataSources();
+            } else {
+                console.log('[players] unexpected message from auth svc: ' + message);
+            }
+        });
+
+        // if already logged in, there will be no notification for signin-done.
+        // simulate the event now.
+        if (this.authSvc.isAuthenticated()) {
+            this.subscribeToDataSources();
+        }
+
+        this.subscriptions.push(this.players$.subscribe());
+        this.subscriptions.push(this.updatePlayers$.subscribe());
+    }
+
+    private readonly subscriptions: Subscription[] = [];
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
+    }
+
+    private currentPlayerList: Player[] = [];
+    private archivedPlayerList: Player[] = [];
+
+    // An observable for the current players list
+    currentPlayersSubject$ = new BehaviorSubject<boolean>(true);
+    public players$ = this.currentPlayersSubject$.asObservable().pipe(
+        tap(_ => console.log("players$ triggered")),
+        tap((_) => { this.loadingFlagService.setLoadingFlag(true, "players-list"); }),
+        switchMap(_ => runInInjectionContext(this.injector, () => docData(doc(this.firestore, '/ratings/current')))),
+        map(playersDocContent => {
+            const snap: PlayerRatingSnapshot = playersDocContent as PlayerRatingSnapshot;
+            const playersArray: Player[] = snap.players;
+            return playersArray;
+        }),
+        tap((_) => { this.loadingFlagService.setLoadingFlag(false, "players-list"); }),
+        catchError((err) => {
+            console.log("read game events encountered issue");
+            return of<Player[]>([]);
+        }),
+        shareReplay(1),
+    );
+
+    uplatePlayersSubject$ = new Subject<Player[]>();
+    public updatePlayers$ = this.uplatePlayersSubject$.asObservable().pipe(
+        tap(_ => this.loadingFlagService.setLoadingFlag(true, "players-update")),
+        switchMap(players => setDoc(doc(this.firestore, '/ratings/current'), { players: players }, { merge: true })),
+        tap(_ => this.currentPlayersSubject$.next(true)),
+        catchError((err) => {
+            console.log("update players encountered issue");
+            return of();
+        }),
+        finalize(() => this.loadingFlagService.setLoadingFlag(false, "players-update")),
+    );
+
+    updatePlayersList(allPlayers: Player[]) {
+        this.uplatePlayersSubject$.next(allPlayers);
+    }
+
+    playerDataChangeEvent = new BehaviorSubject<PlayerChangeInfo | undefined>(undefined);
+
+    subscribeToDataSources() {
+        console.log('[players] subscribing to data sources');
+
+        // Emit an event to signal that the app is fetching / loading data
+        const playerInfo = new PlayerChangeInfo([], 'loading', 'Fetching player data...');
+        console.log('emitting ', playerInfo);
+        this.playerDataChangeEvent.next(playerInfo);
+
+        // subscribe to firebase collection changes.
+        const ratingsDocRef = doc(this.firestore, '/ratings/current');
+        this.dataChangeSubscriptions.push(docData(ratingsDocRef).subscribe({
+            next: playerListDoc => {
+
+                console.log('[players] current ratings watcher notified');
+
+                // if (!playerListDoc.exists) {
+                //     this.playerDataChangeEvent.next(new PlayerChangeInfo(null, 'error', 'Could not connect to DB'));
+                //     return;
+                // }
+                const snap: PlayerRatingSnapshot = playerListDoc as PlayerRatingSnapshot;
+                const playersArray: Player[] = snap.players; //playerListDoc.get('players');
+                playersArray.forEach(x => x.isArchived = false);
+                this.currentLabel = snap.label; //playerListDoc.get('label');
+                this.currentPlayerList = playersArray;
+
+                this.appStorage.setAppStorageItem('players', JSON.stringify(this.currentPlayerList));
+                this.playerDataChangeEvent.next(new PlayerChangeInfo(this.currentPlayerList, 'info', 'Players loaded'));
+            },
+            error: err => console.log('[players-svc] some error encountered', err),
+            complete:
+                () => { console.log('[players-svc] complete') }
+        }));
+
+        const archiveDocRef = doc(this.firestore, 'ratings/archive');
+        // const archivedRatings = this.db.doc('ratings/archive').get();
+        this.dataChangeSubscriptions.push(docData(archiveDocRef).subscribe(playerListDoc => {
+            console.log('[players] archived ratings watcher notified');
+
+            // if (!playerListDoc.exists) {
+            //     this.playerDataChangeEvent.next(new PlayerChangeInfo(null, 'error', 'Could not connect to DB'));
+            //     return;
+            // }
+
+            const snap: PlayerRatingSnapshot = playerListDoc as PlayerRatingSnapshot;
+            const playersArray: Player[] = snap.players; //playerListDoc.get('players');
+            playersArray.forEach(x => x.isArchived = true);
+            this.archivedPlayerList = playersArray;
+            this.appStorage.setAppStorageItem('archived_players', JSON.stringify(this.archivedPlayerList));
+            this.playerDataChangeEvent.next(new PlayerChangeInfo(this.archivedPlayerList, 'info', 'Archive loaded'));
+        }));
+    }
+
+    unsubscribeFromDataSources() {
+        console.log('[players] unsubscribing from data sources');
+        this.dataChangeSubscriptions.forEach(subscription => {
+            subscription.unsubscribe();
+        });
+    }
+
+    getPlayers(includeArchive: boolean = false): Player[] {
+        if (includeArchive) {
+            return this.currentPlayerList.concat(this.archivedPlayerList);
+        } else {
+            return this.currentPlayerList.slice();
+        }
+    }
+
+    async addPlayer(player: Player) {
+        console.log('[playerssvc] added player');
+        this.currentPlayerList.push(player);
+        await this.saveSinglePlayerToFirebase(player);
+    }
+
+    getCurrentLabel() {
+        return this.currentLabel;
+    }
+
+    movePlayerToArchive(player: Player) {
+        console.log('[playerscv] archiving player', player);
+        const backupOfCurrentPlayerList = this.currentPlayerList.slice();
+        const backupOfArchivedPlayerList = this.archivedPlayerList.slice();
+
+        // remove the element from the current player array
+        const tempPlayerList = this.currentPlayerList.filter(x => x != player);
+        if (tempPlayerList.length === this.currentPlayerList.length) {
+            // we should have removed an entry.
+            // this should not happen!
+            return;
+        }
+
+        // ensure that the player is available only once.
+        this.archivedPlayerList.push(player);
+        this.archivedPlayerList = [...new Set(this.archivedPlayerList)];
+
+        this.currentPlayerList = tempPlayerList;
+
+        this.savePlayersArrayToDocAsync(this.archivedPlayerList, 'archive')
+            .then(_ => {
+                // successfully saved archive.
+                // can now also save the regular player list: we won't lose a player, at worst a duplicate
+                this.savePlayersArrayToDocAsync(this.currentPlayerList, 'current')
+                    .then(_ => {
+                        const playerInfo = new PlayerChangeInfo(this.currentPlayerList, 'info', `moved player ${player.name} to archive.`);
+
+                        this.playerDataChangeEvent.next(playerInfo);
+                    })
+                    .catch(err => {
+                        console.log('[players] error saving current player list');
+                        this.currentPlayerList = backupOfCurrentPlayerList;
+                    });
+            })
+            .catch(err => {
+                console.log('[players] error saving archive player list');
+                this.archivedPlayerList = backupOfArchivedPlayerList;
+            });
+    }
+
+    pullPlayerFromArchive(player: Player) {
+        console.log('[playerscv] unarchiving player', player);
+
+        // remove the element from the current player array
+        const tempPlayerList = this.archivedPlayerList.filter(x => x != player);
+        if (tempPlayerList.length === this.archivedPlayerList.length) {
+            // we should have removed an entry.
+            // this should not happen!
+            return;
+        }
+
+        // ensure that the player is available in the current list
+        this.currentPlayerList.push(player);
+        this.archivedPlayerList = tempPlayerList;
+
+        this.savePlayersArrayToDocAsync(this.currentPlayerList, 'current').then(_ => {
+            // successfully saved archive.
+            // can now also save the regular player list: we won't lose a player, at worst a duplicate
+            this.savePlayersArrayToDocAsync(this.archivedPlayerList, 'archive').then(_ => {
+                const playerInfo = new PlayerChangeInfo(this.archivedPlayerList, 'info', `moved player ${player.name} to current.`);
+
+                this.playerDataChangeEvent.next(playerInfo);
+            });
+        });
+    }
+
+    getPlayerById(id: number): Player | undefined {
+        const searchedPlayer: Player | undefined = this.currentPlayerList.find(
+            item => item.id === id);
+
+        if (null != searchedPlayer) {
+            return searchedPlayer;
+        }
+
+        return this.archivedPlayerList.find(
+            item => item.id === id);
+    }
+
+    /**
+     * Updates a player, based on the ID.
+     * @param id The ID of the player.
+     * @param newPlayer The new object (already constructed) to use.
+     */
+    updatePlayerById(id: number, newPlayer: Player): boolean {
+        const oldIndex = this.currentPlayerList.findIndex((playerItem) => (playerItem.id === id));
+        if (oldIndex === -1) {
+            // old entry not found?
+            console.warn('Tried to update a player, but did not find it in the previous entries list');
+            return false;
+        }
+
+        this.currentPlayerList[oldIndex] = newPlayer;
+        console.log('[players.svc] Replaced player for id ' + id + '. New one', newPlayer);
+
+        this.updateSinglePlayerToFirebase(newPlayer);
+
+        return true;
+    }
+
+    /**
+     * Updates a player, based on the ID.
+     * @param id The ID of the player.
+     * @param newPlayer The new object (already constructed) to use.
+     */
+    async updatePlayerByIdAsync(id: number, newPlayer: Player): Promise<boolean> {
+        const oldIndex = this.currentPlayerList.findIndex((playerItem) => (playerItem.id === id));
+        if (oldIndex === -1) {
+            // old entry not found?
+            console.warn('Tried to update a player, but did not find it in the previous entries list');
+            return false;
+        }
+
+        this.currentPlayerList[oldIndex] = newPlayer;
+        console.log('[players.svc] Replaced player for id ' + id + '. New one', newPlayer);
+
+        await this.updateSinglePlayerToFirebase(newPlayer);
+        return true;
+    }
+
+    /**
+     * Updates a player, based on the ID.
+     * @param id The ID of the player.
+     * @param newPlayer The new object (already constructed) to use.
+     */
+    updateCachedPlayerById(id: number, newPlayer: Player): boolean {
+        const oldIndex = this.currentPlayerList.findIndex((playerItem) => (playerItem.id === id));
+        if (oldIndex === -1) {
+            // old entry not found?
+            console.warn('Tried to update a player, but did not find it in the previous entries list');
+            return false;
+        }
+
+        this.currentPlayerList[oldIndex] = newPlayer;
+        console.log('[players.svc] Replaced player for id ' + id + '. New one', newPlayer);
+        return true;
+    }
+
+    public async tryToStoreRecentDrawInHistory(gameObj: CustomPrevGame, matchKey: string) {
+        const participantEntries = [...new Set(gameObj.team1.concat(gameObj.team2).map(player => player.id))]
+            .map(id => ({ id, diff: 0 }));
+        await this.updateRecentMatchEntriesForPlayersAsync(participantEntries, matchKey);
+    }
+
+    private upsertRecentMatchEntry(player: Player, matchKey: string, diff: number): void {
+        if (player.mostRecentMatches == null) {
+            player.mostRecentMatches = [];
+        }
+
+        const existingEntry = player.mostRecentMatches.find(
+            entry => entry.date === matchKey && entry.type !== RecentEntryType.ManualEdit
+        );
+
+        if (existingEntry) {
+            existingEntry.diff = diff;
+            delete existingEntry.type;
+        } else {
+            player.mostRecentMatches.push({ date: matchKey, diff });
+        }
+
+        this.trimAndSortRecentMatches(player);
+    }
+
+    private removeRecentMatchEntry(player: Player, matchKey: string): boolean {
+        if (!player.mostRecentMatches?.length) {
+            return false;
+        }
+
+        const originalLength = player.mostRecentMatches.length;
+        player.mostRecentMatches = player.mostRecentMatches.filter(
+            entry => !(entry.date === matchKey && entry.type !== RecentEntryType.ManualEdit)
+        );
+
+        return player.mostRecentMatches.length !== originalLength;
+    }
+
+    private async updateRecentMatchEntriesForPlayersAsync(entries: Array<{ id: number, diff: number }>, matchKey: string): Promise<void> {
+        let hasChanges = false;
+
+        entries.forEach(entry => {
+            const playerToUpdate = this.getPlayerById(entry.id);
+            if (!playerToUpdate) {
+                return;
+            }
+
+            this.upsertRecentMatchEntry(playerToUpdate, matchKey, entry.diff);
+            this.updateCachedPlayerById(entry.id, playerToUpdate);
+            hasChanges = true;
+        });
+
+        if (hasChanges) {
+            await this.saveAllPlayersToFirebaseAsync();
+        }
+    }
+
+    public async removeRecentMatchFromParticipantsHistoryAsync(gameObj: CustomPrevGame, matchKey: string): Promise<void> {
+        const participantIds = [...new Set(gameObj.team1.concat(gameObj.team2).map(player => player.id))];
+        let hasChanges = false;
+
+        participantIds.forEach(id => {
+            const playerToUpdate = this.getPlayerById(id);
+            if (!playerToUpdate) {
+                return;
+            }
+
+            const removed = this.removeRecentMatchEntry(playerToUpdate, matchKey);
+            if (!removed) {
+                return;
+            }
+
+            this.updateCachedPlayerById(id, playerToUpdate);
+            hasChanges = true;
+        });
+
+        if (hasChanges) {
+            await this.saveAllPlayersToFirebaseAsync();
+        }
+    }
+
+    private trimAndSortRecentMatches(player: Player) {
+        player.mostRecentMatches.sort((a, b) => a.date > b.date ? -1 : 1);
+        const max = this.settingsSvc.getMaxStoredRecentMatchesCount();
+        if (player.mostRecentMatches.length > max) {
+            player.mostRecentMatches = player.mostRecentMatches.slice(0, max);
+        }
+    }
+
+    public async storeRecentMatchToParticipantsHistoryAsync(gameObj: CustomPrevGame, matchKey: string) {
+
+        if (gameObj && (!gameObj.postResults || gameObj.postResults.length === 0) && gameObj.appliedResults && gameObj.savedResult) {
+            return this.tryToStoreRecentDrawInHistory(gameObj, matchKey);
+        }
+
+        await this.updateRecentMatchEntriesForPlayersAsync(gameObj.postResults ?? [], matchKey);
+    }
+
+    /**
+     * Records a manual rating adjustment in the player's recent entry history.
+     */
+    addManualRatingEntry(player: Player, oldRating: number, newRating: number) {
+        const diff = +(newRating - oldRating).toFixed(4);
+        if (diff === 0) return;
+        const today = new Date().toISOString().slice(0, 10);
+        if (player.mostRecentMatches == null) {
+            player.mostRecentMatches = [];
+        }
+        // Replace any existing manual entry for the same day to avoid duplicates.
+        player.mostRecentMatches = player.mostRecentMatches.filter(
+            e => !(e.date === today && e.type === RecentEntryType.ManualEdit)
+        );
+        player.mostRecentMatches.push({ date: today, diff, type: RecentEntryType.ManualEdit });
+        this.trimAndSortRecentMatches(player);
+    }
+
+
+    createDefaultPlayer(): Player {
+        // get the id.
+        const newID = this.currentPlayerList.length ? Math.max.apply(
+            Math,
+            this.currentPlayerList.map((item) => item.id))
+            + 1 : 0;
+
+
+        const newName = 'new_player_' + Date.now().toFixed() + '_' + newID;
+        const result = new Player(newID, newName);
+
+        return result;
+    }
+
+    async saveAllPlayers() {
+        await this.savePlayersToListAsync(this.currentPlayerList, 'current');
+    }
+
+    public async savePlayersArrayToDocAsync(playersArr: Player[], listName: string): Promise<void> {
+        const docName = 'ratings/' + listName;
+        const plainPlayers = playersArr.map(p => ({ ...p }));
+        const obj = { players: plainPlayers };
+        const docRef = doc(this.firestore, docName);
+        console.log('[players-svc] setting data in ' + docName, obj);
+        try {
+            await setDoc(docRef, obj, { merge: true });
+            console.log('[players-svc] successfully saved to ' + docName);
+        } catch (err) {
+            console.error('[players-svc] FAILED to save to ' + docName, err);
+            this.notificationService.emitMessage('Failed to save players to ' + listName + ': ' + err);
+            throw err;
+        }
+    }
+
+    public async savePlayersToListAsync(playersArr: Player[], listName: string): Promise<void> {
+        try {
+            await this.savePlayersArrayToDocAsync(playersArr, listName);
+            const playerInfo = new PlayerChangeInfo(playersArr, 'info', 'Saved players to list ' + listName);
+            console.log('emitting ', playerInfo);
+            this.playerDataChangeEvent.next(playerInfo);
+        } catch (reason) {
+            console.error('[players-svc] savePlayersToListAsync failed for ' + listName, reason);
+            this.playerDataChangeEvent.next(new PlayerChangeInfo(playersArr, 'error', 'Failed to save player list because of ' + reason));
+            this.notificationService.emitMessage('Error saving player list (' + listName + '). Check console for details.');
+        }
+    }
+
+    public async addFieldValueToDocumentAsync(fieldName: string, value: any, documentName: string) {
+        const docName = 'ratings/' + documentName;
+        const docRef = doc(this.firestore, docName);
+        var obj: any = {};
+        obj[fieldName] = value;
+        await setDoc(docRef, obj, { merge: true });
+    }
+
+    public async getCurrentRatingsAsync(): Promise<any> {
+
+        const docName = '/ratings/current';
+        const docRef = doc(this.firestore, docName);
+
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data();
+        }
+        else {
+            console.log('Could not find document for ', docName);
+        }
+    }
+
+    saveSinglePlayerToFirebase(player: Player) {
+        return this.saveAllPlayers();
+    }
+
+    updateSinglePlayerToFirebase(player: Player) {
+        return this.saveAllPlayers();
+    }
+
+    saveAllPlayersToFirebaseAsync() {
+        return this.savePlayersToListAsync(this.currentPlayerList, 'current');
+    }
+
+    public async getRatingHistoryAsync(): Promise<Map<string, RatingHist>> {
+
+        const collectionRef = collection(this.firestore, 'ratings');
+        const docsSnap = await getDocs(collectionRef);
+
+        let history = new Map<string, RatingHist>();
+        docsSnap.forEach(
+            // doc => {
+            // doc.docs.forEach(
+            test => {
+                if (test.id !== 'current') {
+                    const histItem: RatingHist = new RatingHist();
+                    const data: any = test.data();
+                    histItem.players = data.players as Player[];
+                    history.set(test.id, histItem);
+                }
+                // });
+            });
+        return history;
+    }
+
+    /**
+     * Updates an individual player according to the result of a game.
+     * @param player The player to update
+     * @param winners The winning team
+     * @param losers  The losing team
+     * @param difference The difference in goals
+     * @param ratingSystem The used rating system
+     * @returns A player obect
+     */
+    private getPlayerWithUpdatedRatingForGame(
+        player: Player,
+        winners: string[],
+        losers: string[],
+        difference: number,
+        matchRatingsCfg: {
+            takeInitialRatingsIntoAccount: boolean,
+            winnersRatingsTotal: number,
+            losersRatingsTotal: number,
+        }
+    ): Player {
+        const playerCpy: Player = { ...player };
+        if (difference === 0) {
+            return playerCpy;
+        }
+
+        // Winners earn points and losers lose points in some rating systems.
+        // Or the other way around in other rating systems. Use the sign for this.
+        let sign = 0;
+
+        if (winners.includes(playerCpy.name)) {
+            sign = RatingSystemSettings.GetSignMultiplierForWinner();
+        } else if (losers.includes(playerCpy.name)) {
+            sign = RatingSystemSettings.GetSignMultiplierForLoser();
+        }
+
+        let diffToApply = sign * (
+            RatingSystemSettings.GetFixedMultiplierForMatch()
+            + Math.abs(difference) * RatingSystemSettings.GetGoalMultiplierForMatch());
+
+        if (matchRatingsCfg.takeInitialRatingsIntoAccount
+            && matchRatingsCfg.losersRatingsTotal != 0
+            && matchRatingsCfg.winnersRatingsTotal != 0
+        ) {
+            // Determine if this was an upset (weaker team won) or expected outcome (stronger team won)
+            const wasUpset = matchRatingsCfg.winnersRatingsTotal < matchRatingsCfg.losersRatingsTotal;
+            
+            if (wasUpset) {
+                // Upset: weaker team won - apply larger rating changes
+                let ratio = matchRatingsCfg.losersRatingsTotal / matchRatingsCfg.winnersRatingsTotal;
+                // square it to make it more significant
+                ratio = ratio * ratio;
+                diffToApply = diffToApply * ratio;
+                let ratingsDiff = sign * Math.abs(matchRatingsCfg.winnersRatingsTotal - matchRatingsCfg.losersRatingsTotal) / 20;
+                diffToApply = diffToApply + ratingsDiff;
+            } else {
+                // Expected outcome: stronger team won - apply reduced rating changes
+                let ratio = matchRatingsCfg.winnersRatingsTotal / matchRatingsCfg.losersRatingsTotal;
+                // Use inverse ratio to reduce the impact for expected outcomes
+                ratio = 1 / ratio;
+                // Apply a milder multiplier for expected outcomes
+                diffToApply = diffToApply * (0.5 + 0.5 * ratio);
+            }
+        }
+
+        playerCpy.rating = playerCpy.rating + diffToApply;
+        return playerCpy;
+    }
+
+    /**
+     * Obtains an updated list of all players after a game.
+     * @param players The full list of players
+     * @param game The game based on the result of which the ratings will be updated.
+     * @param ratingSystem The rating system to use.
+     * @returns The updated full list of players (new copy)
+     */
+    public getAllPlayersUpdatedRatingsForGame(players: Player[], game: CustomPrevGame): Player[] {
+        if (game.scoreTeam1 == null || game.scoreTeam2 == null
+            || game.scoreTeam1 === game.scoreTeam2) {
+            // nothing to do
+            return players.slice();
+        }
+
+        // (deep) clone the array
+        const playersCpy = players.map(x => ({ ...x }));
+
+        const difference = game.scoreTeam1 - game.scoreTeam2;
+        let winners: string[] = [];
+        let losers: string[] = [];
+        let winnersRatingsTotal = 0;
+        let losersRatingsTotal = 0;
+
+        if (difference > 0) {
+            winners = game.team1.map((player) => player.name);
+            winnersRatingsTotal = game.team1.reduce((acc, player) => acc + player.rating, 0);
+            losers = game.team2.map((player) => player.name);
+            losersRatingsTotal = game.team2.reduce((acc, player) => acc + player.rating, 0);
+        } else {
+            losers = game.team1.map((player) => player.name);
+            losersRatingsTotal = game.team1.reduce((acc, player) => acc + player.rating, 0);
+            winners = game.team2.map((player) => player.name);
+            winnersRatingsTotal = game.team2.reduce((acc, player) => acc + player.rating, 0);
+        }
+
+        let matchRatingsCfg = {
+            takeInitialRatingsIntoAccount: true,
+            winnersRatingsTotal: winnersRatingsTotal,
+            losersRatingsTotal: losersRatingsTotal,
+        };
+
+        return playersCpy.map(player => this.getPlayerWithUpdatedRatingForGame(player, winners, losers, difference, matchRatingsCfg));
+    }
+
+    /**
+     * Obtains a list of players which took part in a game.
+     * @param game The game based on the result of which the ratings will be updated.
+     * @param ratingSystem The rating system to use.
+     * @returns The list of players which were part of the game with new ratings (new copy).
+     */
+    public getPlayersWithUpdatedRatingsForGame(game: CustomPrevGame, useDiff: boolean): Player[] {
+        let playersCpy: Player[] = [...game.team1.concat([...game.team2])];
+        if (game.scoreTeam1 == null || game.scoreTeam2 == null
+            || game.scoreTeam1 === game.scoreTeam2) {
+            // nothing to do
+            return playersCpy;
+        }
+
+        let winnersRatingsTotal = 0;
+        let losersRatingsTotal = 0;
+
+        const difference = game.scoreTeam1 - game.scoreTeam2;
+        let winners: string[] = [];
+        let losers: string[] = [];
+        if (difference > 0) {
+            winners = game.team1.map((player) => player.name);
+            winnersRatingsTotal = game.team1.reduce((acc, player) => acc + player.rating, 0);
+            losers = game.team2.map((player) => player.name);
+            losersRatingsTotal = game.team2.reduce((acc, player) => acc + player.rating, 0);
+        } else {
+            losers = game.team1.map((player) => player.name);
+            losersRatingsTotal = game.team1.reduce((acc, player) => acc + player.rating, 0);
+            winners = game.team2.map((player) => player.name);
+            winnersRatingsTotal = game.team2.reduce((acc, player) => acc + player.rating, 0);
+        }
+
+        let matchRatingsCfg = {
+            takeInitialRatingsIntoAccount: useDiff,
+            winnersRatingsTotal: winnersRatingsTotal,
+            losersRatingsTotal: losersRatingsTotal,
+        };
+
+        return playersCpy.map(player => this.getPlayerWithUpdatedRatingForGame(player, winners, losers, difference, matchRatingsCfg));
+    }
+
+}

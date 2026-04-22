@@ -1,0 +1,750 @@
+@media (prefers-color-scheme: dark) {
+  :root {
+    --btn-active-color: #b5a7c2;
+    --btn-back-color: #423e52;
+    --gus-primary-bck-color: #040730;
+    --gus-secondary-bck-color: #09465e;
+    --gus-primary-text-color: #fff;
+    --gus-secondary-text-color: rgb(213, 250, 255);
+    --gus-impact-text-color: rgb(238, 165, 9);
+    --standard-secondary-text-color: #999;
+
+    --gus-panel-bck: linear-gradient(135deg,
+        #2bb7e2 0%,
+        #217892 67%,
+        #113844 95%,
+        #040f13 100%);
+    --gus-panel-alt-bck: linear-gradient(135deg,
+        #0e6b836a 0%,
+        #1047526a 67%,
+        #03343a6a 100%);
+    --gus-panel-text: #f3e5d0;
+    --gus-contrast-panel-bck: rgb(2, 12, 27);
+    --gus-contrast-panel-alt-bck: #994b0b3d;
+    --gus-secondary-bck: #074146d6;
+    --gus-secondary-grad: linear-gradient(135deg, #140258 0%, #111325 100%);
+    --gus-pref-icon-size: 28px;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --btn-active-color: #732db6;
+    --btn-back-color: #120052;
+    --gus-primary-bck-color: #ffffff;
+    --gus-secondary-bck-color: #c2e4fa;
+    --gus-primary-text-color: #000;
+    --gus-secondary-text-color: #345;
+    --gus-impact-text-color: rgb(121, 84, 4);
+
+    --gus-panel-bck: linear-gradient(135deg,
+        #2bb7e2 0%,
+        #217892 67%,
+        #113844 95%,
+        #040f13 100%);
+    --gus-panel-alt-bck: linear-gradient(135deg,
+        #9a2bd1 0%,
+        #8a2be2 67%,
+        #520997 100%);
+    --gus-panel-text: #fff;
+    --gus-contrast-panel-bck: #fff;
+    --gus-contrast-panel-alt-bck: #362b2b08;
+    --gus-secondary-bck: #ddd;
+    --gus-secondary-grad: linear-gradient(135deg, #ffffff 0%, #e7f7ff 100%);
+    --gus-pref-icon-size: 28px;
+  }
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.main-layout {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "main"
+    "footer";
+}
+
+.main-layout>.header {
+  grid-area: header;
+}
+
+.main-layout>.footer {
+  grid-area: footer;
+}
+
+.main-layout>.main {
+  grid-area: main;
+  overflow: auto;
+}
+
+.form-control {
+  color: var(--gus-primary-text-color);
+  background-color: var(--gus-primary-bck-color);
+}
+
+.form-control:focus {
+  color: var(--gus-secondary-text-color);
+  background-color: var(--gus-secondary-bck-color);
+}
+
+.form-control:disabled {
+  color: var(--gus-secondary-text-color);
+  background-color: var(--gus-contrast-panel-bck);
+}
+
+.toast .toast-body {
+  background-color: var(--gus-secondary-bck);
+  color: var(--gus-secondary-text-color);
+}
+
+body {
+  background-color: var(--gus-primary-bck-color);
+  color: var(--gus-primary-text-color);
+  margin: 0;
+}
+
+.gus-search-box {
+  padding: 0.5rem;
+  display: flex;
+}
+
+
+/* You can add global styles to this file, and also import other style files */
+.player-card {
+  cursor: pointer;
+  margin: 0;
+}
+
+.player-card-rating {
+  text-align: right;
+  vertical-align: bottom;
+  padding-right: 1rem;
+  font-weight: 700;
+}
+
+.player-card-rating::before {
+  content: "";
+  background-image: url("assets/star_32.png");
+  background-size: 100% 100%;
+  display: inline-block;
+  height: 1ch;
+  width: 1ch;
+  position: relative;
+}
+
+.player-card-container {
+  display: flex;
+  position: relative;
+  align-content: center;
+  background: var(--gus-secondary-grad);
+  color: var(--gus-primary-text-color);
+  margin: 0.25rem 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.player-card-container:hover {
+  background: var(--gus-panel-alt-bck);
+  color: var(--gus-panel-text);
+}
+
+/**TODO: this is cloned from .player-card-container. Make common class for coloring */
+.gus-hoverable {
+  border-color: var(--gus-secondary-bck);
+  background: var(--gus-secondary-grad);
+  color: var(--gus-primary-text-color);
+}
+
+.gus-hoverable:hover {
+  background: var(--gus-panel-alt-bck);
+  color: var(--gus-panel-text);
+}
+
+
+.player-card-grad {
+  /* border-color: var(--btn-active-color);
+  background: var(--gus-primary-bck-color);
+  color: var(--gus-primary-text-color); */
+}
+
+.player-card-grad:hover {
+  /* background: var(--gus-panel-alt-bck);
+  color: var(--gus-panel-text); */
+}
+
+a.player-card-grad {
+  text-decoration: none;
+}
+
+a.player-card-grad:hover {
+  color: white;
+}
+
+.player-card-img {
+  display: inline-block;
+  width: 100%;
+  padding-left: 0.75rem;
+}
+
+.player-num {
+  position: absolute;
+  left: .25rem;
+  top: 1rem;
+  line-height: 2;
+  color: var(--gus-panel-text);
+}
+
+.player-shirt-num {
+  background-image: url("assets/tshirt.svg");
+  background-repeat: no-repeat;
+  background-size: 80% 120%;
+  background-position: -200% -25%;
+}
+
+.player-card-sub-container {
+  width: 100%;
+  height: 100%;
+}
+
+.player-card-panel {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: flex-end;
+  margin-left: auto;
+  width: 100%;
+}
+
+.player-card-content {
+  width: 100%;
+  background-color: #000000A0;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.player-card-internalid {
+  font-size: x-small;
+  text-align: right;
+  padding: 0;
+}
+
+.player-card-recent-matches {
+  font-size: medium;
+}
+
+.player-card-recent-matches-good {
+  color: #30FF3084;
+  text-shadow: 0 0 0 green;
+}
+
+.player-card-recent-matches-very-good {
+  color: #30FF3054;
+  text-shadow: 0 0 0 green;
+}
+
+.player-card-recent-matches-bad {
+  color: #FF303084;
+  text-shadow: 0 0 0 red;
+}
+
+.player-card-recent-matches-very-bad {
+  color: #FF303054;
+  text-shadow: 0 0 0 red;
+}
+
+.player-card-recent-matches-neutral {
+  color: #77777774;
+  text-shadow: 0 0 0 gray;
+}
+
+.player-card-recent-matches-manual {
+  color: #A0A0FF99;
+  text-shadow: 0 0 0 #6060cc;
+}
+
+
+.player-card-name {
+  font-size: medium;
+  font-weight: 700;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.player-card-namesubtext {
+  font-size: xx-small;
+  vertical-align: bottom;
+  text-align: right;
+}
+
+.player-card-team-selector {
+  font-weight: 900;
+  padding: 2rem;
+  /* padding-left: 2rem; */
+  /* padding-right: 2rem; */
+  border-color: var(--btn-active-color, black);
+  line-height: 2;
+}
+
+.player-card-team-selector-active {
+  background: var(--btn-back-color, teal);
+}
+
+.player-card-team-selector:hover {
+  background: linear-gradient(135deg,
+      #2bb7e2 0%,
+      #217892 67%,
+      #113844 95%,
+      #040f13 100%);
+  color: white;
+}
+
+.btn {
+  cursor: pointer;
+  appearance: none;
+  border: solid 1px burlywood;
+  background-color: var(--btn-back-color);
+  padding: 0.2em;
+}
+
+.btn-cmd-float {
+  position: fixed;
+  width: 4.5rem;
+  height: 4.5rem;
+
+  bottom: 0rem;
+  right: 0rem;
+
+  border-radius: 2.25rem;
+  margin: 1rem;
+}
+
+.btn-grad-gusty:hover {
+  background: var(--gus-panel-alt-bck);
+  animation: GradAnim 2s ease infinite;
+  color: var(--gus-primary-text-color);
+}
+
+.btn-outline-gus {
+  border-color: var(--btn-active-color);
+  border-width: 1px;
+  color: var(--gus-primary-text-color);
+}
+
+.btn-gus-small {
+  color: var(--gus-primary-text-color);
+  padding: 0.05rem 0.07rem;
+}
+
+.btn-gus-small:hover {
+  color: var(--gus-impact-text-color);
+}
+
+.btn-gus-small>svg {
+  vertical-align: middle;
+}
+
+.card-header {
+  color: #fff;
+  background-color: var(--gus-contrast-panel-alt-bck);
+  border-bottom-color: rgba(0, 0, 0, 0.125);
+}
+
+.card {
+  background-color: var(--gus-contrast-panel-bck);
+}
+
+@keyframes GradAnim {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.left-player-list {
+  padding-right: 0.1rem;
+  padding-left: 0;
+}
+
+.right-player-list {
+  padding-left: 0.1rem;
+  padding-right: 0;
+}
+
+.panel-draft-icons {
+  padding: 0.25rem 0.25rem;
+}
+
+.btn-icon-gus {
+  padding: 0.1rem 0.2rem;
+}
+
+
+/* Inspired by https://codepen.io/denilsonsa/pen/oNZWRJ */
+.date-as-calendar {
+  font-variant: normal;
+  font-style: normal;
+  font-weight: normal;
+
+  vertical-align: top;
+
+  /* color: var(--gus-primary-text-color); */
+  /* background: var(--gus-primary-bck-color); */
+  /* background : linear-gradient(to bottom right, var(--gus-primary-bck-color) 0%, var(--gus-secondary-bck-color) 100%); */
+
+  border-color: var(--gus-secondary-bck);
+  background: var(--gus-secondary-grad);
+  color: var(--gus-primary-text-color);
+  overflow: hidden;
+  box-shadow: 2px 2px 2px -2px black;
+}
+
+.date-as-calendar .suffix,
+.date-as-calendar .day,
+.date-as-calendar .month,
+.date-as-calendar .year {
+  text-align: center;
+  line-height: 1.0;
+}
+
+.date-as-calendar .month {
+  text-transform: uppercase;
+  background: var(--gus-impact-text-color);
+  background: var(--gus-panel-bck);
+  /* linear-gradient(to bottom right, #D66 0%, #A00 100%); */
+  color: var(--gus-primary-text-color);
+}
+
+.gray-calendar .month {
+  background: var(--gus-secondary-bck);
+  color: var(--gus-primary-text-color);
+}
+
+
+/****************************************/
+/* Layout rules using display: inline-flex and relative dimensions using em. */
+.vert-calendar.date-as-calendar {
+  /* flex-direction: column; */
+  /* flex-wrap: nowrap; */
+  /* justify-content: space-between; */
+  width: 2.8em;
+  height: 4.0em;
+}
+
+.vert-calendar.date-as-calendar .suffix,
+.vert-calendar.date-as-calendar .day,
+.vert-calendar.date-as-calendar .month,
+.vert-calendar.date-as-calendar .year {
+  display: block;
+  flex: 1 1 auto;
+}
+
+.vert-calendar.date-as-calendar .month {
+  order: 1;
+  font-size: 0.75em;
+  padding: 0.1em 0;
+}
+
+.vert-calendar.date-as-calendar .day {
+  order: 3;
+  font-size: 1.5em;
+}
+
+.vert-calendar.date-as-calendar .suffix {
+  order: 6;
+  font-size: 0.75em;
+}
+
+.vert-calendar.date-as-calendar .year {
+  order: 4;
+  font-size: 0.6em;
+}
+
+.match-card {
+  margin: 1.5em 0em;
+  padding: 0.5em 0em;
+  list-style-type: none;
+  text-align: center;
+  cursor: pointer;
+
+}
+
+.match-card-active {
+  /* background: linear-gradient(135deg, #3CB9FC 0%,#3CB9FC 67%,rgb(90, 157, 194) 100%); */
+  /* background: #3CB9FC; */
+  background: linear-gradient(135deg, #511a85 0%, #541b8a 67%, rgb(95, 31, 128) 100%);
+  color: white;
+}
+
+.match-card-active:hover {
+  background: linear-gradient(135deg, #8A2Be2 0%, #8A2Be2 67%, rgb(181, 55, 242) 100%);
+}
+
+.gus-border {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--gus-secondary-bck);
+  border-radius: 0.2rem;
+}
+
+.gus-button {
+  background: var(--gus-secondary-grad);
+  color: var(--gus-primary-text-color);
+  padding: 0.5rem;
+  margin: 0.1rem;
+
+  cursor: pointer;
+}
+
+.pseudo-disabled {
+  background: var(--gus-secondary-bck-color);
+  color: var(--gus-secondary-text-color);
+  cursor: default;
+}
+
+.pseudo-button {
+  width: min-content;
+}
+
+.gus-button:disabled {
+  background: var(--gus-secondary-bck-color);
+  color: var(--gus-secondary-text-color);
+  cursor: default;
+}
+
+.gus-button-narrow {
+  background: var(--gus-secondary-grad);
+  color: var(--gus-primary-text-color);
+  padding: 0;
+  margin: 0.1rem;
+
+  cursor: pointer;
+}
+
+.gus-button-active {
+  background: linear-gradient(135deg, #511a85 0%, #541b8a 67%, rgb(95, 31, 128) 100%);
+  color: var(--gus-panel-text);
+}
+
+.gus-button-active:hover {
+  background: linear-gradient(135deg, #8A2Be2 0%, #8A2Be2 67%, rgb(181, 55, 242) 100%);
+  color: var(--gus-panel-text);
+}
+
+.history-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-top-outline {
+  border-bottom: 1px solid var(--gus-secondary-bck);
+  padding-bottom: 0.25em;
+}
+
+.history-bot-outline {
+  border-top: 1px solid var(--gus-secondary-bck);
+  padding-top: 0.5em;
+}
+
+.g-row {
+  display: grid;
+  gap: 0.25em;
+  grid-template-columns: repeat(auto-fill, 2.75em);
+}
+
+.f-row {
+  display: flex;
+  /* gap: 0.25em; */
+}
+
+.f-row-center {
+  align-items: center;
+}
+
+.f-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.half-width {
+  width: 50%;
+}
+
+.f-row-align-right {
+  margin-left: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.f-align-center {
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer {
+  text-align: center;
+  align-self: flex-end;
+  flex-shrink: 1;
+}
+
+.gus-centerpiece {
+  display: flex;
+  /* align-items: flex-start; */
+  /* justify-content: center; */
+  max-width: fit-content;
+}
+
+.gus-page-container {
+  min-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  /*temporary*/
+  /* border: 1px dashed blanchedalmond; */
+}
+
+@media (max-width: 600px) {
+  .gus-page-container {
+    margin-left: 0;
+    margin-right: 0;
+    /* min-width: min-content;
+    max-width: max-content;
+    min-width: 500px; */
+  }
+}
+@media (min-width: 601px) and (max-width: 900px) {
+  .gus-page-container {
+    min-width: 600px;
+  }
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .gus-page-container {
+    min-width: 800px;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1600px) {
+  .gus-page-container {
+    min-width: 900px;
+  }
+}
+@media (min-width: 1601px) and (max-width: 1900px) {
+  .gus-page-container {
+    min-width: 1000px;
+  }
+}
+@media (min-width: 1901px) {
+  .gus-page-container {
+    min-width: 1100px;
+  }
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "dataheader dataheader"
+    "dataleft dataright"
+    "dataleft dataright"
+    "datafooter datafooter";
+}
+
+.history-grid-data-left {
+  display: inline-grid;
+  grid-area: dataleft;
+}
+
+.history-grid-data-right {
+  display: inline-grid;
+  grid-area: dataright;
+}
+
+.history-grid-data-header {
+  display: inline-grid;
+  grid-area: dataheader;
+}
+
+.history-grid-data-footer {
+  display: inline-grid;
+  grid-area: datafooter;
+}
+
+.score {
+  font-weight: 700;
+}
+
+.gus-list {
+  padding: 0.5em 0.1em;
+  list-style: none;
+}
+
+.gus-list-item::before {
+  content: "👨";
+}
+
+.gus-list-item-name {
+  font-weight: 700;
+}
+
+.gus-list-item-rating {
+  padding-left: 0.3em;
+  color: var(--standard-secondary-text-color);
+}
+
+.gus-list-item-diff {
+  padding-left: 0.3em;
+  font-style: italic;
+}
+
+.good-num {
+  color: rgb(129, 218, 129);
+}
+
+.good-num::before {
+  content: "+";
+}
+
+.bad-num {
+  color: rgb(212, 100, 100);
+}
+
+.gus-sidenav {
+  height: 100%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: var(--gus-secondary-bck);
+  overflow-x: hidden;
+  transition: 0.2s;
+}
+
+.gus-sidenav-hidden {
+  width: 0;
+}
+
+.gus-sidenav-shown {
+  width: 100%;
+}
+
+.gus-sidenav-container {
+  background-color: var(--gus-primary-bck-color);
+  padding: 6rem 2rem;
+  height: 100%;
+  width: 420px;
+}

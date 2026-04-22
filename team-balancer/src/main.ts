@@ -1,0 +1,95 @@
+import { AsyncPipe } from '@angular/common';
+import { enableProdMode, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideRouter, Routes, withComponentInputBinding, withDebugTracing } from '@angular/router';
+import { AboutComponent } from './app/about/about.component';
+import { AdminComponent } from './app/admin/admin.component';
+import { AppComponent } from './app/app.component';
+
+import { AdminGuard } from './app/auth/admin-guard.service';
+import { AuthGuard } from './app/auth/auth-guard.service';
+import { OrganizerGuard } from './app/auth/organizer-guard.service';
+import { SigninComponent } from './app/auth/signin/signin.component';
+import { CustomgameComponent } from './app/customgame/customgame.component';
+import { PrevMatchDetailComponent } from './app/matches/prev-match-detail/prev-match-detail.component';
+import { RecentMatchesComponent } from './app/matches/previous-matches/recent-matches.component';
+import { PlayerDetailsComponent } from './app/players/player-details/player-details.component';
+import { PlayerEditComponent } from './app/players/player-edit/player-edit.component';
+import { PlayerStartComponent } from './app/players/player-start/player-start.component';
+import { PlayersComponent } from './app/players/players.component';
+import { AppStorage } from './app/shared/app-storage';
+import { MatchService } from './app/shared/match.service';
+import { PlayersService } from './app/shared/players.service';
+import { environment } from './environments/environment';
+import { PrivacyComponent } from './app/auth/privacy/privacy.component';
+import { GameEventsComponent } from './app/matchesnew/history/game-events.component';
+import { MatchDetailsComponent } from './app/matchesnew/details/details.component';
+import { UserAuthService } from './app/auth/user-auth.service';
+import { NotificationService } from './app/utils/notification/notification.service';
+import { LoadingFlagService } from './app/utils/loading-flag.service';
+import { NextDraftComponent } from './app/nextdraft/nextdraft.component';
+import { DraftSelectionService } from './app/nextdraft/data-access/draft-selection.service';
+import { CurrentPlayersService } from './app/nextdraft/data-access/current-players.service';
+
+if (environment.production) {
+  enableProdMode();
+}
+
+const appRoutes: Routes = [
+  { path: '', redirectTo: '/about', pathMatch: 'full' },
+  {
+    path: 'players', canActivate: [AuthGuard], component: PlayersComponent, children: [
+      { path: '', component: PlayerStartComponent },
+      { path: 'new', canActivate: [AuthGuard, OrganizerGuard], component: PlayerEditComponent },
+      { path: ':id', component: PlayerDetailsComponent },
+      { path: ':id/edit', canActivate: [AuthGuard, OrganizerGuard], component: PlayerEditComponent }
+    ]
+  },
+  {
+    path: 'recent', canActivate: [AuthGuard], component: RecentMatchesComponent, children: [
+      { path: ':id', component: PrevMatchDetailComponent }
+    ]
+  },
+  {
+    path: 'games', canActivate: [AuthGuard], component: GameEventsComponent, children: [
+      { path: ':id', component: MatchDetailsComponent }
+    ]
+  },
+  { path: 'nextdraft', canActivate: [AuthGuard], component: NextDraftComponent },
+  {
+    path: 'custom', canActivate: [AuthGuard, OrganizerGuard], component: CustomgameComponent
+  },
+  { path: 'about', component: AboutComponent },
+  { path: 'admin', canActivate: [AuthGuard, AdminGuard], component: AdminComponent },
+  { path: 'signin', component: SigninComponent },
+  { path: 'privacy', component: PrivacyComponent }
+];
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideZoneChangeDetection(),provideRouter(appRoutes, withComponentInputBinding()),
+    provideAuth(() => {
+      return getAuth();
+    }),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => {
+      return getFirestore();
+    }),
+    PlayersService,
+    MatchService,
+    CurrentPlayersService,
+    UserAuthService,
+    NotificationService,
+    DraftSelectionService,
+    LoadingFlagService,
+    AuthGuard,
+    OrganizerGuard,
+    AdminGuard,
+    AppStorage,
+    AsyncPipe,
+
+  ]
+}).catch((err) => console.error(err));

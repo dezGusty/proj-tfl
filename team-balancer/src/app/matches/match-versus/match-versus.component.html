@@ -1,0 +1,20 @@
+<div class="f-row">
+  <div class="half-width">The Pink Dragons 🐉</div>
+  <div class="half-width">The Ghetto Ducks 🦆</div>
+</div>
+<div class="f-row">
+  <div class="half-width">rating: {{team1Rating| number: '1.2-2'}}</div>
+  <div class="half-width">rating: {{team2Rating| number: '1.2-2'}}</div>
+</div>
+<div class="f-row">
+  <div class="half-width f-column f-row-align-left">
+    @for (leftItem of this.extractedTeam1; track $index) {
+    <div>{{$index+1}}. {{ this.getDisplayNameForPlayer(leftItem) }}</div>
+    }
+  </div>
+  <div class="half-width f-column f-row-align-right">
+    @for (rightItem of this.extractedTeam2; track $index) {
+    <div>{{$index+1}}. {{ this.getDisplayNameForPlayer(rightItem) }}</div>
+    }
+  </div>
+</div>

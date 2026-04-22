@@ -1,0 +1,59 @@
+<div class="history-area">
+  <div class="history-top-outline g-row">
+    <button class="gus-border gus-hoverable" type="button" (click)="onAddGameClicked();">Add ➕</button>
+    @for (matchData of this.gameEventTitlesSig(); track $index) {
+    <div (click)="onMatchEntryClicked(matchData)"
+      class="gus-button-narrow gus-border player-card-grad date-as-calendar vert-calendar gus-hoverable"
+      [class.gus-button-active]="matchData == this.selectedMatch()" [class.gray-calendar]="!isDateActive(matchData)">
+      <span class="year">{{matchData.year}}</span>
+      <span class="month">{{matchData.month}}</span>
+      <span class="day">{{matchData.day}}</span>
+      <span class="suffix">{{matchData.suffix}}</span>
+    </div>
+    } @empty {
+    <div>No recent matches.</div>
+    }
+    <button class="gus-border gus-hoverable" type="button" (click)="onViewSummaryClicked();">View 👁️</button>
+  </div>
+  <div class="history-bot-outline">
+
+    @if(this.addEvent(); as eventEditForm) {
+    @if (eventEditForm.action != undefined && eventEditForm.action != EMPTY) {
+    <form (submit)="saveMatch(eventEditForm)">
+      <h3>{{eventEditForm.action =="add" ? "Add" : "Edit" }} Game Event</h3>
+      <label for="event_date"></label>
+      <input class="gus-input gus-border" [ngModel]="eventEditForm.matchDate | date:'yyyy-MM-dd'"
+        (ngModelChange)="this.onCalendarDateSelected($event)" type="date" name="event_date" required
+        placeholder="Event Date">
+      <label for="event_name"></label>
+      <input class="gus-input gus-border gus-hoverable" [(ngModel)]="eventEditForm.suffix" type="text" name="event_name"
+        placeholder="(Optional) Suffix">
+      <div>
+        <label for="name_preview">Name Preview:</label>
+        <input class="gus-input gus-border" type="text" name="name_preview" placeholder="Select a date"
+          value="{{this.getPreviewName(eventEditForm.matchDate, eventEditForm.suffix)}}" readonly disabled>
+      </div>
+      <div>
+        <button type="button" class="gus-button gus-border gus-hoverable"
+          (click)="this.selectNextGameDay()">Next Game Day</button>
+      </div>
+      <div>
+        <button type="submit" class="gus-button gus-border gus-hoverable">Save</button>
+        <button type="button" class="gus-button gus-border gus-hoverable" (click)="this.cancelEdit()">Cancel</button>
+      </div>
+    </form>
+    }
+    }
+
+    @if (this.selectedMatch(); as selectedMatch) {
+    <app-gameeventdraft></app-gameeventdraft>
+    }
+  </div>
+</div>
+<div id="summary-sidenav" class="gus-sidenav"
+  [ngClass]="this.isSideNavOpen ? 'gus-sidenav-shown' : 'gus-sidenav-hidden'"
+  (click)="onSideNavOuterContainerClicked()">
+
+  <app-summary (onCloseBtnClicked)="onCloseSummaryClicked()" [availableEvents]="activeGameEventTitlesSig()"></app-summary>
+
+</div>
