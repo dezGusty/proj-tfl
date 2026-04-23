@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;c127218dc5b7f7745054d921bfb578bc80dfb001e8756a289bd17a52bb9bea2b;/workspace/proj-tfl/tfl-frontend/src/app/features/draft/draft-page/draft-page.component.ts"],
-  "sourcesContent": [".draft-page { padding: 1rem; } button { padding: 0.5rem 1rem; margin: 0.5rem; }"],
-  "mappings": ";AAAA,CAAC;AAAa,WAAS;AAAM;AAAE;AAAS,WAAS,OAAO;AAAM,UAAQ;AAAQ;",
-  "names": []
-}

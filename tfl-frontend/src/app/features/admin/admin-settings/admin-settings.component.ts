@@ -5,7 +5,6 @@ import { SettingsApiService } from '../../../core/api/settings-api.service';
 
 @Component({
   selector: 'app-admin-settings',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
     <div class="admin-settings">

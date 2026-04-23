@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "TFL API (Development)",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/tfl-backend/src/TFL.API/TFL.API.csproj",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}

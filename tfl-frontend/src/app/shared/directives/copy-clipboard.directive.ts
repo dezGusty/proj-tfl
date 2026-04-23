@@ -1,15 +1,14 @@
-import { Directive, HostListener, Input } from '@angular/core';
+import { Directive, input } from '@angular/core';
 
 @Directive({
   selector: '[appCopyClipboard]',
-  standalone: true
+  host: { '(click)': 'onClick($event)' },
 })
 export class CopyClipboardDirective {
-  @Input({ required: true }) appCopyClipboard!: string;
+  readonly appCopyClipboard = input.required<string>();
 
-  @HostListener('click', ['$event'])
   onClick(event: Event) {
     event.stopPropagation();
-    navigator.clipboard.writeText(this.appCopyClipboard).catch(() => {});
+    navigator.clipboard.writeText(this.appCopyClipboard()).catch(() => {});
   }
 }

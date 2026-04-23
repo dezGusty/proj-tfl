@@ -5,7 +5,6 @@ import { GameEventsApiService } from '../../../core/api/game-events-api.service'
 
 @Component({
   selector: 'app-game-events-list',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
     <div class="game-events-list">

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/game-events/game-events.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router';\n\nexport const GAME_EVENT_ROUTES: Routes = [\n  { path: '', loadComponent: () => import('./game-events-list/game-events-list.component').then(m => m.GameEventsListComponent) },\n  { path: 'summary', loadComponent: () => import('./game-events-summary/game-events-summary.component').then(m => m.GameEventsSummaryComponent) },\n  { path: ':name', loadComponent: () => import('./game-event-detail/game-event-detail.component').then(m => m.GameEventDetailComponent) },\n];\n"],
-  "mappings": ";;;AAEO,IAAM,oBAA4B;EACvC,EAAE,MAAM,IAAI,eAAe,MAAM,OAAO,qBAA+C,EAAE,KAAK,OAAK,EAAE,uBAAuB,EAAC;EAC7H,EAAE,MAAM,WAAW,eAAe,MAAM,OAAO,qBAAqD,EAAE,KAAK,OAAK,EAAE,0BAA0B,EAAC;EAC7I,EAAE,MAAM,SAAS,eAAe,MAAM,OAAO,qBAAiD,EAAE,KAAK,OAAK,EAAE,wBAAwB,EAAC;;",
-  "names": []
-}

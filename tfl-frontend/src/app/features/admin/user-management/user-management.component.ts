@@ -4,7 +4,6 @@ import { UsersApiService } from '../../../core/api/users-api.service';
 
 @Component({
   selector: 'app-user-management',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="user-management">

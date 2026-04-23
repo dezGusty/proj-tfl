@@ -5,7 +5,6 @@ import { DraftApiService } from '../../../core/api/draft-api.service';
 
 @Component({
   selector: 'app-team-results',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
     <div class="team-results">

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-privacy',
-  standalone: true,
   template: `
     <div class="privacy-page">
       <h1>Privacy Policy</h1>

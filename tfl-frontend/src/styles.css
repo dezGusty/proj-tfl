@@ -1,1 +1,57 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global design tokens */
+:root {
+  --color-primary: #2d7a2d;
+  --color-primary-dark: #1e5c1e;
+  --color-primary-subtle: #e8f5e9;
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b7280;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f3f4f6;
+  --color-border: #e5e7eb;
+  --color-error: #dc2626;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: #f9fafb;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5em;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+/* Focus outline */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

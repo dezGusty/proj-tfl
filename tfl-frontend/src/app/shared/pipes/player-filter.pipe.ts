@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Player } from '../../core/models/player.model';
 
-@Pipe({ name: 'playerFilter', standalone: true })
+@Pipe({ name: 'playerFilter' })
 export class PlayerFilterPipe implements PipeTransform {
   transform(players: Player[], searchTerm: string): Player[] {
     if (!searchTerm) return players;

@@ -6,7 +6,6 @@ import { GameEvent } from '../../../core/models/game-event.model';
 
 @Component({
   selector: 'app-game-event-detail',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
     @if (event()) {

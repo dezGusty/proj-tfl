@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;7eadeb0773665b753e961d60abcd819da90e55b415f6becd5d68c55ad0b9cce3;/workspace/proj-tfl/tfl-frontend/src/app/features/game-events/game-events-list/game-events-list.component.ts"],
-  "sourcesContent": [".game-events-list { padding: 1rem; } .event-card { border: 1px solid #ccc; padding: 0.5rem; margin: 0.25rem; border-radius: 4px; display: flex; gap: 1rem; align-items: center; }"],
-  "mappings": ";AAAA,CAAC;AAAmB,WAAS;AAAM;AAAE,CAAC;AAAa,UAAQ,IAAI,MAAM;AAAM,WAAS;AAAQ,UAAQ;AAAS,iBAAe;AAAK,WAAS;AAAM,OAAK;AAAM,eAAa;AAAQ;",
-  "names": []
-}

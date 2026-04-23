@@ -6,7 +6,6 @@ import { PlayersApiService } from '../../../core/api/players-api.service';
 
 @Component({
   selector: 'app-draft-page',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
     <div class="draft-page">

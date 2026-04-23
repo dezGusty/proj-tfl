@@ -7,7 +7,6 @@ import { RatingBadgeComponent } from '../../../shared/components/rating-badge/ra
 
 @Component({
   selector: 'app-player-detail',
-  standalone: true,
   imports: [CommonModule, RouterLink, RatingBadgeComponent],
   template: `
     @if (player()) {

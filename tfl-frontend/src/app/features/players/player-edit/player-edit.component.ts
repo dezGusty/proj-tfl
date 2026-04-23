@@ -7,7 +7,6 @@ import { Player } from '../../../core/models/player.model';
 
 @Component({
   selector: 'app-player-edit',
-  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
     @if (player()) {

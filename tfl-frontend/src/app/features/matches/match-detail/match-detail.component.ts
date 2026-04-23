@@ -6,7 +6,6 @@ import { Match } from '../../../core/models/match.model';
 
 @Component({
   selector: 'app-match-detail',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
     @if (match()) {

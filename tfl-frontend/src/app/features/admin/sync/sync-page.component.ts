@@ -4,7 +4,6 @@ import { SyncApiService } from '../../../core/api/sync-api.service';
 
 @Component({
   selector: 'app-sync-page',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="sync-page">

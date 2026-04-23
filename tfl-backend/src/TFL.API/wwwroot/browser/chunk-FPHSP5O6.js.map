@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/privacy/privacy.component.ts"],
-  "sourcesContent": ["import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-privacy',\n  standalone: true,\n  template: `\n    <div class=\"privacy-page\">\n      <h1>Privacy Policy</h1>\n      <p>TFL collects your Google account email and profile photo to identify you within the app. No data is shared with third parties.</p>\n    </div>\n  `,\n  styles: [`.privacy-page { padding: 2rem; max-width: 600px; margin: 0 auto; }`]\n})\nexport class PrivacyComponent {}\n"],
-  "mappings": ";;;;;;;;;;;;AAaM,IAAO,mBAAP,MAAO,kBAAgB;;qCAAhB,mBAAgB;EAAA;yEAAhB,mBAAgB,WAAA,CAAA,CAAA,aAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,GAAA,cAAA,CAAA,GAAA,UAAA,SAAA,0BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAPzB,MAAA,4BAAA,GAAA,OAAA,CAAA,EAA0B,GAAA,IAAA;AACpB,MAAA,iBAAA,GAAA,gBAAA;AAAc,MAAA,0BAAA;AAClB,MAAA,4BAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,gIAAA;AAA8H,MAAA,0BAAA,EAAI;;;;;sEAK9H,kBAAgB,CAAA;UAX5B;uBACW,eAAa,YACX,MAAI,UACN;;;;;KAKT,QAAA,CAAA,uTAAA,EAAA,CAAA;;;;6EAGU,kBAAgB,EAAA,WAAA,oBAAA,UAAA,iDAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
-  "names": []
-}

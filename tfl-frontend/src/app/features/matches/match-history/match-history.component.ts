@@ -5,7 +5,6 @@ import { MatchesApiService } from '../../../core/api/matches-api.service';
 
 @Component({
   selector: 'app-match-history',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
     <div class="match-history">

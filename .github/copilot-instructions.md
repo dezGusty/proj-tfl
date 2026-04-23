@@ -31,3 +31,7 @@ Merges from the `devel` branch to the `main` branch should be done by a human, a
 
 Data migrations should be prepared for developers to run locally.
 SQL scripts should be provided for DB changes to allow production DB changes to be made by a human, after testing and review.
+
+## Angular Front-end development
+
+Refer to the [Angular instructions](./angular.md) for best practices and guidelines for Angular front-end development.

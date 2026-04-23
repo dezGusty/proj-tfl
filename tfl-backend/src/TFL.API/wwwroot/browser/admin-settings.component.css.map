@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;43fb3aa58d93ecafc1e1de379d0be352715c27a0aa3221c7055d22acc0cdefbd;/workspace/proj-tfl/tfl-frontend/src/app/features/admin/admin-settings/admin-settings.component.ts"],
-  "sourcesContent": [".admin-settings { padding: 1rem; } label { display: block; margin: 0.5rem 0; } input { width: 80px; padding: 0.25rem; } button { padding: 0.5rem 1rem; margin-top: 1rem; } .saved { color: green; }"],
-  "mappings": ";AAAA,CAAC;AAAiB,WAAS;AAAM;AAAE;AAAQ,WAAS;AAAO,UAAQ,OAAO;AAAG;AAAE;AAAQ,SAAO;AAAM,WAAS;AAAS;AAAE;AAAS,WAAS,OAAO;AAAM,cAAY;AAAM;AAAE,CAAC;AAAQ,SAAO;AAAO;",
-  "names": []
-}

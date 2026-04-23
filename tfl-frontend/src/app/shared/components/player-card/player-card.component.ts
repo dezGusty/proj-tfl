@@ -6,7 +6,6 @@ import { CopyClipboardDirective } from '../../directives/copy-clipboard.directiv
 
 @Component({
   selector: 'app-player-card',
-  standalone: true,
   imports: [CommonModule, RatingBadgeComponent, CopyClipboardDirective],
   template: `
     <div class="player-card">

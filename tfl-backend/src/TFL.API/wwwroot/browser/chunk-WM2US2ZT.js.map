@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/players/players.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router';\n\nexport const PLAYER_ROUTES: Routes = [\n  { path: '', loadComponent: () => import('./player-list/player-list.component').then(m => m.PlayerListComponent) },\n  { path: ':id', loadComponent: () => import('./player-detail/player-detail.component').then(m => m.PlayerDetailComponent) },\n  { path: ':id/edit', loadComponent: () => import('./player-edit/player-edit.component').then(m => m.PlayerEditComponent) },\n];\n"],
-  "mappings": ";;;AAEO,IAAM,gBAAwB;EACnC,EAAE,MAAM,IAAI,eAAe,MAAM,OAAO,qBAAqC,EAAE,KAAK,OAAK,EAAE,mBAAmB,EAAC;EAC/G,EAAE,MAAM,OAAO,eAAe,MAAM,OAAO,qBAAyC,EAAE,KAAK,OAAK,EAAE,qBAAqB,EAAC;EACxH,EAAE,MAAM,YAAY,eAAe,MAAM,OAAO,qBAAqC,EAAE,KAAK,OAAK,EAAE,mBAAmB,EAAC;;",
-  "names": []
-}

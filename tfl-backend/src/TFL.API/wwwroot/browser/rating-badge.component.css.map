@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;010ea7255f2e58540c904920f0562fde1ad294d23dd3ad78fc11473a14b765f0;/workspace/proj-tfl/tfl-frontend/src/app/shared/components/rating-badge/rating-badge.component.ts"],
-  "sourcesContent": [".rating-badge { padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.9rem; font-weight: bold; } .high { background: #28a745; color: white; } .mid { background: #ffc107; color: black; } .low { background: #dc3545; color: white; }"],
-  "mappings": ";AAAA,CAAC;AAAe,WAAS,OAAO;AAAQ,iBAAe;AAAK,aAAW;AAAQ,eAAa;AAAM;AAAE,CAAC;AAAO,cAAY;AAAS,SAAO;AAAO;AAAE,CAAC;AAAM,cAAY;AAAS,SAAO;AAAO;AAAE,CAAC;AAAM,cAAY;AAAS,SAAO;AAAO;",
-  "names": []
-}

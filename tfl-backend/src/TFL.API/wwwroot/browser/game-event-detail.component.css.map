@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;766d4ad4c386309ed164eebd8fa923b86a5c61fc72c54bc1f232db5c8af7579f;/workspace/proj-tfl/tfl-frontend/src/app/features/game-events/game-event-detail/game-event-detail.component.ts"],
-  "sourcesContent": [".event-detail { padding: 1rem; } button { margin: 0.25rem; padding: 0.5rem 1rem; }"],
-  "mappings": ";AAAA,CAAC;AAAe,WAAS;AAAM;AAAE;AAAS,UAAQ;AAAS,WAAS,OAAO;AAAM;",
-  "names": []
-}

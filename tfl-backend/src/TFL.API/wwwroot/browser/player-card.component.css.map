@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;8d46da446941bcd9d7c8f82fc8e22557b70eac25fc47e942a4b05eb1136d362d;/workspace/proj-tfl/tfl-frontend/src/app/shared/components/player-card/player-card.component.ts"],
-  "sourcesContent": [".player-card { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border: 1px solid #eee; border-radius: 4px; cursor: pointer; } .name { flex: 1; font-weight: bold; } .copy { cursor: pointer; font-size: 0.8rem; }"],
-  "mappings": ";AAAA,CAAC;AAAc,WAAS;AAAM,eAAa;AAAQ,OAAK;AAAQ,WAAS;AAAQ,UAAQ,IAAI,MAAM;AAAM,iBAAe;AAAK,UAAQ;AAAS;AAAE,CAAC;AAAO,QAAM;AAAG,eAAa;AAAM;AAAE,CAAC;AAAO,UAAQ;AAAS,aAAW;AAAQ;",
-  "names": []
-}

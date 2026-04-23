@@ -9,7 +9,6 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-player-list',
-  standalone: true,
   imports: [CommonModule, RouterLink, PlayerCardComponent, PlayerFilterPipe, FormsModule],
   template: `
     <div class="player-list">

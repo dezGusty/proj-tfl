@@ -52,3 +52,4 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+tfl-backend/src/TFL.API/wwwroot/browser/chunk-6NUZQOD2.js

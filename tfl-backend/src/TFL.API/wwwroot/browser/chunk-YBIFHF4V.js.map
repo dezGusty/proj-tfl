@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/admin/admin.routes.ts"],
-  "sourcesContent": ["import { Routes } from '@angular/router';\n\nexport const ADMIN_ROUTES: Routes = [\n  { path: '', redirectTo: 'settings', pathMatch: 'full' },\n  { path: 'settings', loadComponent: () => import('./admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent) },\n  { path: 'users', loadComponent: () => import('./user-management/user-management.component').then(m => m.UserManagementComponent) },\n  { path: 'sync', loadComponent: () => import('./sync/sync-page.component').then(m => m.SyncPageComponent) },\n];\n"],
-  "mappings": ";;;AAEO,IAAM,eAAuB;EAClC,EAAE,MAAM,IAAI,YAAY,YAAY,WAAW,OAAM;EACrD,EAAE,MAAM,YAAY,eAAe,MAAM,OAAO,qBAA2C,EAAE,KAAK,OAAK,EAAE,sBAAsB,EAAC;EAChI,EAAE,MAAM,SAAS,eAAe,MAAM,OAAO,qBAA6C,EAAE,KAAK,OAAK,EAAE,uBAAuB,EAAC;EAChI,EAAE,MAAM,QAAQ,eAAe,MAAM,OAAO,qBAA4B,EAAE,KAAK,OAAK,EAAE,iBAAiB,EAAC;;",
-  "names": []
-}

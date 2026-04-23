@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["angular:styles/component:css;5d87c3ad558dd36480be0532093279635398af23610b74674cc558dddc4e29cd;/workspace/proj-tfl/tfl-frontend/src/app/features/matches/match-detail/match-detail.component.ts"],
-  "sourcesContent": [".match-detail { padding: 1rem; } .teams { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }"],
-  "mappings": ";AAAA,CAAC;AAAe,WAAS;AAAM;AAAE,CAAC;AAAQ,WAAS;AAAM,yBAAuB,IAAI;AAAK,OAAK;AAAM;",
-  "names": []
-}
