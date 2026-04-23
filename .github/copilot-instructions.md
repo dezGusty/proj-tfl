@@ -35,3 +35,9 @@ SQL scripts should be provided for DB changes to allow production DB changes to 
 ## Angular Front-end development
 
 Refer to the [Angular instructions](./angular.md) for best practices and guidelines for Angular front-end development.
+
+## Front and back-end interaction
+
+Do not store a compiled version of the front-end in the wwwroot folder of the back-end. Instead, the front-end should be built and served separately from the back-end. The back-end should provide APIs for the front-end to consume, but should not include the front-end code itself in the repository.
+
+When deploying, the front-end shall be compiled and stored in the wwwroot folder of the back-end, but this should be done as part of the deployment process, not as part of the development process. This allows for better separation of concerns and makes it easier to manage and deploy the front-end and back-end independently.
